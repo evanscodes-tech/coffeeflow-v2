@@ -1,0 +1,49 @@
+{% extends "base.html" %} 
+ 
+{% block title %}Deliveries - CoffeeFlow{% endblock %} 
+ 
+{% block content %} 
+<div class="card"> 
+    <h2><i class="fas fa-truck"></i> Coffee Deliveries</h2> 
+    <table style="width: 100%%; border-collapse: collapse;"> 
+        <thead> 
+            <tr style="background: var(--primary); color: white;"> 
+                <th style="padding: 12px;">Batch</th> 
+                <th>Farmer</th> 
+                <th>Cherry (kg)</th> 
+                <th>Dry (kg)</th> 
+                <th>Amount</th> 
+                <th>Status</th> 
+                <th>SMS</th> 
+                <th>Date</th> 
+            </tr> 
+        </thead> 
+        <tbody> 
+        {% for delivery in deliveries %} 
+            <tr style="border-bottom: 1px solid #ddd;"> 
+                <td style="padding: 10px;">{{ delivery.batch_code }}</td> 
+                <td>{{ delivery.farmer.full_name }}</td> 
+                <td>{{ delivery.cherry_weight_kg }}</td> 
+                <td> 
+                    {% if delivery.payment_status == 'paid' %} 
+                        <span style="color: green;">Paid</span> 
+                    {% else %} 
+                        <span style="color: orange;">Pending</span> 
+                    {% endif %} 
+                </td> 
+                <td> 
+                    {% if delivery.sms_sent %} 
+                        ? 
+                    {% else %} 
+                        ? 
+                    {% endif %} 
+                </td> 
+                <td>{{ delivery.delivery_date }}</td> 
+            </tr> 
+        {% empty %} 
+            <tr><td colspan="8" style="text-align: center; padding: 20px;">No deliveries recorded yet.</td></tr> 
+        {% endfor %} 
+        </tbody> 
+    </table> 
+</div> 
+{% endblock %} 

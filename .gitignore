@@ -1,0 +1,28 @@
+# Python 
+__pycache__/ 
+*.pyc 
+*.pyo 
+*.pyd 
+.Python 
+env/ 
+venv/ 
+.env 
+.venv/ 
+ECHO is on.
+# Django 
+*.log 
+local_settings.py 
+db.sqlite3 
+db.sqlite3-journal 
+media/ 
+staticfiles/ 
+ECHO is on.
+# IDE 
+.vscode/ 
+.idea/ 
+*.swp 
+*.swo 
+ECHO is on.
+# OS 
+.DS_Store 
+Thumbs.db 

@@ -1,0 +1,56 @@
+{% extends "base.html" %} 
+ 
+{% block title %}Farmer Details - CoffeeFlow{% endblock %} 
+ 
+{% block content %} 
+<div class="profile-header"> 
+    <div class="profile-avatar"> 
+        <i class="fas fa-user-circle" style="font-size: 3rem;"></i> 
+    </div> 
+    <div class="profile-info"> 
+        <h2>{{ farmer.first_name }} {{ farmer.last_name }}</h2> 
+        <p><i class="fas fa-phone"></i> {{ farmer.phone_number }}</p> 
+        <p><i class="fas fa-map-marker-alt"></i> {{ farmer.village }}, {{ farmer.district }}, {{ farmer.region }}</p> 
+    </div> 
+</div> 
+ 
+<div class="stats-grid"> 
+    <div class="stat-card"> 
+        <div class="stat-number">{{ farmer.total_deliveries }}</div> 
+        <div class="stat-label">Total Deliveries</div> 
+    </div> 
+    <div class="stat-card"> 
+        <div class="stat-number">{{ farmer.total_kgs_delivered }} kg</div> 
+        <div class="stat-label">Coffee Delivered</div> 
+    </div> 
+    <div class="stat-card"> 
+        <div class="stat-label">Total Payments</div> 
+    </div> 
+</div> 
+ 
+<div class="profile-details"> 
+    <div class="detail-card"> 
+        <h3><i class="fas fa-info-circle"></i> Farm Information</h3> 
+        <p><strong>Farm Name:</strong> {{ farmer.farm_name }}</p> 
+        <p><strong>Farm Size:</strong> {{ farmer.farm_size_acres }} acres</p> 
+        <p><strong>Coffee Varieties:</strong> {{ farmer.coffee_varieties }}</p> 
+        <p><strong>Years Farming:</strong> {{ farmer.years_farming }}</p> 
+    </div> 
+ 
+    <div class="detail-card"> 
+        <h3><i class="fas fa-cog"></i> SMS Settings</h3> 
+        <p><strong>SMS Notifications:</strong> 
+            {% if farmer.sms_notifications %} 
+                <span style="color: green;">Enabled</span> 
+            {% else %} 
+                <span style="color: red;">Disabled</span> 
+            {% endif %} 
+        </p> 
+        <p><strong>SMS Language:</strong> {{ farmer.get_sms_language_display }}</p> 
+    </div> 
+</div> 
+ 
+<div style="margin-top: 20px;"> 
+    <a href="{% url 'farmers:list' %}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back to List</a> 
+</div> 
+{% endblock %} 

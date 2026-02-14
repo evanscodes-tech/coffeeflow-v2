@@ -1,0 +1,41 @@
+{% extends "base.html" %} 
+ 
+{% block title %}Home - CoffeeFlow{% endblock %} 
+ 
+{% block content %} 
+<div style="text-align: center; padding: 60px 20px;"> 
+    <h1 style="font-size: 3.5rem; color: var(--primary); margin-bottom: 20px;"><i class="fas fa-mug-hot"></i> CoffeeFlow</h1> 
+    <p style="font-size: 1.2rem; color: #666; max-width: 600px; margin: 0 auto 40px;"> 
+        Your Digital Coffee Collection <i class="fas fa-leaf"></i> Farmer Management System 
+    </p> 
+ 
+    {% if not user.is_authenticated %} 
+    <div style="display: flex; gap: 20px; justify-content: center;"> 
+        <a href="{% url 'login' %}" class="btn btn-secondary" style="padding: 15px 40px;"><i class="fas fa-sign-in-alt"></i> Login</a> 
+        <a href="{% url 'register' %}" class="btn btn-primary" style="padding: 15px 40px;"><i class="fas fa-user-plus"></i> Register</a> 
+    </div> 
+    {% else %} 
+    <div> 
+        <a href="{% url 'profile' %}" class="btn btn-primary" style="padding: 15px 40px;"><i class="fas fa-id-card"></i> Go to Profile</a> 
+    </div> 
+    {% endif %} 
+</div> 
+ 
+<div class="stats-grid" style="margin-top: 60px;"> 
+    <div class="stat-card"> 
+        <i class="fas fa-tractor" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 15px;"></i> 
+        <h3 style="color: var(--primary); margin-bottom: 15px;">Farmer Management</h3> 
+        <p>Register and manage farmers, track their coffee production</p> 
+    </div> 
+    <div class="stat-card"> 
+        <i class="fas fa-truck" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 15px;"></i> 
+        <h3 style="color: var(--primary); margin-bottom: 15px;">Coffee Deliveries</h3> 
+        <p>Record coffee cherry deliveries with automatic conversion</p> 
+    </div> 
+    <div class="stat-card"> 
+        <i class="fas fa-coins" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 15px;"></i> 
+        <h3 style="color: var(--primary); margin-bottom: 15px;">Payment Tracking</h3> 
+        <p>Manage farmer payments and generate reports</p> 
+    </div> 
+</div> 
+{% endblock %} 

@@ -1,0 +1,35 @@
+{% extends "base.html" %} 
+ 
+{% block title %}Login - CoffeeFlow{% endblock %} 
+ 
+{% block content %} 
+<div class="form-container"> 
+    <h1 class="form-title"><i class="fas fa-mug-hot"></i> Welcome Back</h1> 
+    <form method="post" novalidate> 
+        {% csrf_token %} 
+        {% for field in form %} 
+            <div class="form-group"> 
+                <label for="{{ field.id_for_label }}"> 
+                    <i class="fas {% if field.name == 'username' %}fa-user{% elif field.name == 'password' %}fa-lock{% else %}fa-input{% endif %}"></i> 
+                    {{ field.label }}{% if field.field.required %} <span style="color: var(--error);">*</span>{% endif %} 
+                </label> 
+                {{ field }} 
+                {% if field.help_text %} 
+                    <small class="help-text">{{ field.help_text }}</small> 
+                {% endif %} 
+                {% for error in field.errors %} 
+                    <span class="error-text">? {{ error }}</span> 
+                {% endfor %} 
+            </div> 
+        {% endfor %} 
+        <button type="submit" class="btn btn-primary" style="width: 100%%; padding: 16px; font-size: 1.1rem; margin-top: 16px;"> 
+            <i class="fas fa-sign-in-alt"></i> Sign In  
+        </button> 
+    </form> 
+    <div style="text-align: center; margin-top: 28px; padding-top: 20px; border-top: 1px solid rgba(139, 90, 43, 0.1);"> 
+        <p style="color: var(--text-light);"> 
+            Don't have an account? <a href="{% url 'register' %}" style="color: var(--primary); font-weight: 600; text-decoration: none;"><i class="fas fa-user-plus"></i> Create one </a> 
+        </p> 
+    </div> 
+</div> 
+{% endblock %} 

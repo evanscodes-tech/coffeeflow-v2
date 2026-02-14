@@ -1,0 +1,50 @@
+{% extends "base.html" %} 
+ 
+{% block title %}Profile - CoffeeFlow{% endblock %} 
+ 
+{% block content %} 
+<div class="profile-header"> 
+    <div class="profile-avatar"> 
+        <i class="fas fa-user-circle" style="font-size: 3rem;"></i> 
+    </div> 
+    <div class="profile-info"> 
+        <h2><i class="fas fa-user"></i> {{ user.username }}</h2> 
+        <p><i class="fas fa-envelope"></i> {{ user.email }}</p> 
+    </div> 
+</div> 
+ 
+<div class="profile-details"> 
+    <div class="detail-card"> 
+        <h3><i class="fas fa-id-card"></i> Personal Information</h3> 
+        <p><i class="fas fa-user" style="width: 20px;"></i> <strong>Username:</strong> {{ user.username }}</p> 
+        <p><i class="fas fa-envelope" style="width: 20px;"></i> <strong>Email:</strong> {{ user.email }}</p> 
+    </div> 
+ 
+    <div class="detail-card"> 
+        <h3><i class="fas fa-calendar-alt"></i> Account Information</h3> 
+    </div> 
+</div> 
+ 
+<div class="stats-grid"> 
+    <div class="stat-card"> 
+        <i class="fas fa-truck" style="font-size: 2rem; color: var(--primary); margin-bottom: 10px;"></i> 
+        <div class="stat-number">0</div> 
+        <div class="stat-label">Total Deliveries</div> 
+    </div> 
+    <div class="stat-card"> 
+        <i class="fas fa-weight" style="font-size: 2rem; color: var(--primary); margin-bottom: 10px;"></i> 
+        <div class="stat-number">0 kg</div> 
+        <div class="stat-label">Coffee Delivered</div> 
+    </div> 
+    <div class="stat-card"> 
+        <i class="fas fa-coins" style="font-size: 2rem; color: var(--primary); margin-bottom: 10px;"></i> 
+        <div class="stat-number">KES 0</div> 
+        <div class="stat-label">Total Payments</div> 
+    </div> 
+</div> 
+ 
+<div style="display: flex; gap: 10px; justify-content: center;"> 
+    <a href="{% url 'profile_edit' %}" class="btn btn-primary"><i class="fas fa-edit"></i> Edit Profile</a> 
+    <a href="{% url 'home' %}" class="btn btn-secondary"><i class="fas fa-home"></i> Home</a> 
+</div> 
+{% endblock %} 
