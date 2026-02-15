@@ -1,0 +1,434 @@
+{% extends "base.html" %} 
+{% load static %} 
+ 
+{% block title %}Analytics Dashboard - CoffeeFlow{% endblock %} 
+ 
+{% block extra_css %} 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.css"> 
+<style> 
+    .dashboard-header { 
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark)); 
+        color: white; 
+        padding: 30px; 
+        border-radius: var(--radius-lg); 
+        margin-bottom: 30px; 
+    } 
+    .stat-card { 
+        background: white; 
+        border-radius: var(--radius-lg); 
+        padding: 20px; 
+        box-shadow: var(--shadow-md); 
+        transition: transform 0.2s; 
+        border: 1px solid rgba(139, 90, 43, 0.1); 
+    } 
+    .stat-card:hover { 
+        transform: translateY(-5px); 
+        box-shadow: var(--shadow-hover); 
+    } 
+    .stat-value { 
+        font-size: 2.5rem; 
+        font-weight: 700; 
+        color: var(--primary); 
+        margin-bottom: 5px; 
+    } 
+    .stat-label { 
+        color: var(--text-light); 
+        font-size: 0.9rem; 
+        text-transform: uppercase; 
+        letter-spacing: 1px; 
+    } 
+    .chart-container { 
+        background: white; 
+        border-radius: var(--radius-lg); 
+        padding: 20px; 
+        margin-bottom: 20px; 
+        box-shadow: var(--shadow-md); 
+        height: 400px; 
+        position: relative; 
+    } 
+    .export-btn { 
+        margin: 20px 0; 
+        display: flex; 
+        gap: 10px; 
+        justify-content: flex-end; 
+    } 
+    .date-range { 
+        display: flex; 
+        gap: 10px; 
+        align-items: center; 
+        margin-bottom: 20px; 
+        background: white; 
+        padding: 15px; 
+        border-radius: var(--radius-md); 
+        box-shadow: var(--shadow-sm); 
+    } 
+    .table { 
+        width: 100%; 
+        border-collapse: collapse; 
+    } 
+    .table th { 
+        background: var(--primary); 
+        color: white; 
+        padding: 12px; 
+        text-align: left; 
+    } 
+    .table td { 
+        padding: 10px; 
+        border-bottom: 1px solid #eee; 
+    } 
+    .table-striped tbody tr:nth-child(odd) { 
+        background-color: #f9f9f9; 
+    } 
+    .refresh-btn {
+        margin-left: 10px;
+        padding: 8px 16px;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: var(--radius-md);
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .refresh-btn:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+    }
+    .refresh-btn i {
+        margin-right: 5px;
+    }
+    .last-updated {
+        color: var(--text-light);
+        font-size: 0.9rem;
+        margin-left: 15px;
+    }
+    .loading-spinner {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid rgba(139, 90, 43, 0.3);
+        border-radius: 50%;
+        border-top-color: var(--primary);
+        animation: spin 1s ease-in-out infinite;
+    }
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+</style> 
+{% endblock %} 
+ 
+{% block content %} 
+<div class="dashboard-header"> 
+    <h1><i class="fas fa-chart-line"></i> Analytics Dashboard</h1> 
+    <p>Real-time insights into your coffee collection operations</p> 
+</div> 
+ 
+<div class="stats-grid" style="margin-bottom: 30px;"> 
+    <div class="stat-card"> 
+        <div class="stat-value" id="totalFarmers">0</div> 
+        <div class="stat-label">Total Farmers</div> 
+    </div> 
+    <div class="stat-card"> 
+        <div class="stat-value" id="totalDeliveries">0</div> 
+        <div class="stat-label">Total Deliveries</div> 
+    </div> 
+    <div class="stat-card"> 
+        <div class="stat-value" id="totalKgs">0 kg</div> 
+        <div class="stat-label">Coffee Delivered</div> 
+    </div> 
+    <div class="stat-card"> 
+        <div class="stat-value" id="totalPayments">KES 0</div> 
+        <div class="stat-label">Total Payments</div> 
+    </div> 
+</div> 
+ 
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <div class="date-range" style="margin-bottom: 0;"> 
+        <label for="dateRange">Date Range:</label> 
+        <select id="dateRange" class="form-control" style="width: auto;"> 
+            <option value="7">Last 7 days</option> 
+            <option value="30" selected>Last 30 days</option> 
+            <option value="90">Last 90 days</option> 
+            <option value="365">Last year</option> 
+            <option value="custom">Custom range</option> 
+        </select> 
+        <div id="customDateRange" style="display: none; gap: 10px;"> 
+            <input type="date" id="startDate" class="form-control"> 
+            <input type="date" id="endDate" class="form-control"> 
+            <button class="btn btn-primary" onclick="updateCharts()">Apply</button> 
+        </div> 
+    </div>
+    <div>
+        <button onclick="forceRefresh()" class="refresh-btn">
+            <i class="fas fa-sync-alt"></i> Refresh Now
+        </button>
+        <span class="last-updated" id="lastUpdated"></span>
+    </div>
+</div>
+ 
+<div class="export-btn"> 
+    <button class="btn btn-secondary" onclick="exportData('csv')"> 
+        <i class="fas fa-file-csv"></i> Export CSV 
+    </button> 
+    <button class="btn btn-secondary" onclick="exportData('excel')"> 
+        <i class="fas fa-file-excel"></i> Export Excel 
+    </button> 
+    <button class="btn btn-primary" onclick="exportData('pdf')"> 
+        <i class="fas fa-file-pdf"></i> Export PDF 
+    </button> 
+</div> 
+ 
+<div class="dashboard-grid"> 
+    <div class="row"> 
+        <div class="col-md-6"> 
+            <div class="chart-container"> 
+                <h3><i class="fas fa-truck"></i> Deliveries Over Time</h3> 
+                <canvas id="deliveryChart"></canvas> 
+            </div> 
+        </div> 
+        <div class="col-md-6"> 
+            <div class="chart-container"> 
+                <h3><i class="fas fa-chart-pie"></i> Quality Distribution</h3> 
+                <canvas id="qualityChart"></canvas> 
+            </div> 
+        </div> 
+    </div> 
+    <div class="row"> 
+        <div class="col-md-12"> 
+            <div class="chart-container" style="height: auto; min-height: 400px;"> 
+                <h3><i class="fas fa-trophy"></i> Top Performing Farmers</h3> 
+                <div style="height: 300px; overflow-y: auto;"> 
+                    <table class="table table-striped"> 
+                        <thead> 
+                            <tr> 
+                                <th>Farmer</th> 
+                                <th>Farm</th> 
+                                <th>Total Kgs</th> 
+                                <th>Deliveries</th> 
+                                <th>Payments (KES)</th> 
+                            </tr> 
+                        </thead> 
+                        <tbody id="topFarmersTable"> 
+                            <tr><td colspan="5" class="text-center">Loading...</td></tr> 
+                        </tbody> 
+                    </table> 
+                </div> 
+            </div> 
+        </div> 
+    </div> 
+    <div class="row"> 
+        <div class="col-md-12"> 
+            <div class="chart-container" style="height: 500px;"> 
+                <div class="row"> 
+                    <div class="col-md-6"> 
+                        <canvas id="predictionChart"></canvas> 
+                    </div> 
+                    <div class="col-md-6"> 
+                        <canvas id="seasonalityChart"></canvas> 
+                    </div> 
+                </div> 
+            </div> 
+        </div> 
+    </div> 
+</div> 
+{% endblock %} 
+ 
+{% block extra_js %} 
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script> 
+<script> 
+    // Chart instances
+    let deliveryChart, qualityChart, predictionChart, seasonalityChart;
+ 
+    function updateLastUpdated() {
+        const now = new Date();
+        const timeString = now.toLocaleTimeString();
+        document.getElementById('lastUpdated').textContent = `Last updated: ${timeString}`;
+    }
+ 
+    function loadStats() { 
+        fetch('/reports/api/stats/') 
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('totalFarmers').textContent = data.total_farmers; 
+                document.getElementById('totalDeliveries').textContent = data.total_deliveries; 
+                document.getElementById('totalKgs').textContent = data.total_kgs.toFixed(0) + ' kg'; 
+                document.getElementById('totalPayments').textContent = 'KES ' + data.total_payments.toFixed(0); 
+            })
+            .catch(error => console.error('Error loading stats:', error));
+    } 
+ 
+    function loadDeliveryChart() { 
+        const days = document.getElementById('dateRange').value; 
+        fetch(`/reports/api/delivery-summary/?days=${days}`) 
+            .then(response => response.json())
+            .then(data => {
+                const ctx = document.getElementById('deliveryChart').getContext('2d'); 
+                if (deliveryChart) deliveryChart.destroy(); 
+                deliveryChart = new Chart(ctx, { 
+                    type: 'line', 
+                    data: { 
+                        labels: data.labels, 
+                        datasets: data.datasets 
+                    }, 
+                    options: { 
+                        responsive: true, 
+                        maintainAspectRatio: false,
+                        scales: { 
+                            y: { type: 'linear', display: true, position: 'left' }, 
+                            y1: { type: 'linear', display: true, position: 'right', grid: { drawOnChartArea: false } } 
+                        } 
+                    } 
+                }); 
+            })
+            .catch(error => console.error('Error loading delivery chart:', error));
+    } 
+ 
+    function loadQualityChart() { 
+        fetch('/reports/api/quality-distribution/') 
+            .then(response => response.json())
+            .then(data => {
+                const ctx = document.getElementById('qualityChart').getContext('2d'); 
+                if (qualityChart) qualityChart.destroy(); 
+                qualityChart = new Chart(ctx, { 
+                    type: 'pie', 
+                    data: { 
+                        labels: data.labels, 
+                        datasets: data.datasets 
+                    }, 
+                    options: { 
+                        responsive: true, 
+                        maintainAspectRatio: false, 
+                        plugins: { legend: { position: 'bottom' } } 
+                    } 
+                }); 
+            })
+            .catch(error => console.error('Error loading quality chart:', error));
+    } 
+ 
+    function loadTopFarmers() { 
+        fetch('/reports/api/top-farmers/') 
+            .then(response => response.json())
+            .then(data => {
+                const tbody = document.getElementById('topFarmersTable'); 
+                tbody.innerHTML = ''; 
+                data.data.forEach(farmer => {
+                    const row = document.createElement('tr'); 
+                    row.innerHTML = ` 
+                        <td>${farmer.name}</td> 
+                        <td>${farmer.farm}</td> 
+                        <td>${farmer.total_kgs.toFixed(2)} kg</td> 
+                        <td>${farmer.deliveries}</td> 
+                        <td>KES ${farmer.payments.toFixed(2)}</td> 
+                    `; 
+                    tbody.appendChild(row); 
+                }); 
+            })
+            .catch(error => console.error('Error loading top farmers:', error));
+    } 
+ 
+    function loadPredictionData() { 
+        fetch('/reports/api/harvest-prediction/') 
+            .then(response => response.json())
+            .then(data => {
+                // Prediction chart
+                const predCtx = document.getElementById('predictionChart').getContext('2d'); 
+                if (predictionChart) predictionChart.destroy(); 
+                
+                const predLabels = data.predictions.map(p => p.date);
+                const predValues = data.predictions.map(p => p.predicted_kgs);
+                
+                predictionChart = new Chart(predCtx, { 
+                    type: 'line', 
+                    data: { 
+                        labels: predLabels, 
+                        datasets: [{ 
+                            label: 'Predicted Harvest (kg)', 
+                            data: predValues, 
+                            borderColor: '#8B5A2B', 
+                            backgroundColor: 'rgba(139, 90, 43, 0.1)' 
+                        }] 
+                    }, 
+                    options: { 
+                        responsive: true, 
+                        maintainAspectRatio: false, 
+                        plugins: { 
+                            title: { display: true, text: '30-Day Harvest Prediction' } 
+                        } 
+                    } 
+                }); 
+ 
+                // Seasonality chart
+                const seaCtx = document.getElementById('seasonalityChart').getContext('2d'); 
+                if (seasonalityChart) seasonalityChart.destroy(); 
+                
+                const seaLabels = data.seasonality.map(s => s.month);
+                const seaValues = data.seasonality.map(s => s.avg_kgs);
+                
+                seasonalityChart = new Chart(seaCtx, { 
+                    type: 'bar', 
+                    data: { 
+                        labels: seaLabels, 
+                        datasets: [{ 
+                            label: 'Average Monthly Harvest (kg)', 
+                            data: seaValues, 
+                            backgroundColor: '#C4A35A' 
+                        }] 
+                    }, 
+                    options: { 
+                        responsive: true, 
+                        maintainAspectRatio: false, 
+                        plugins: { 
+                            title: { display: true, text: 'Seasonality Pattern' } 
+                        } 
+                    } 
+                }); 
+            })
+            .catch(error => console.error('Error loading prediction data:', error));
+    } 
+ 
+    function loadAllData() {
+        loadStats(); 
+        loadDeliveryChart(); 
+        loadQualityChart(); 
+        loadTopFarmers(); 
+        loadPredictionData(); 
+        updateLastUpdated();
+    }
+ 
+    function updateCharts() { 
+        loadDeliveryChart(); 
+        loadQualityChart(); 
+        loadPredictionData(); 
+    } 
+ 
+    // Global refresh function
+    function forceRefresh() {
+        loadAllData();
+    }
+ 
+    function exportData(format) { 
+        const reportType = prompt('Enter report type (deliveries, farmers):', 'deliveries'); 
+        if (reportType) { 
+            location.href = `/reports/export/${reportType}/?format=${format}`; 
+        } 
+    } 
+ 
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() { 
+        loadAllData();
+        
+        // Auto-refresh every 30 seconds
+        setInterval(function() {
+            loadAllData();
+        }, 30000);
+ 
+        document.getElementById('dateRange').addEventListener('change', function(e) { 
+            if (e.target.value === 'custom') { 
+                document.getElementById('customDateRange').style.display = 'flex'; 
+            } else { 
+                document.getElementById('customDateRange').style.display = 'none'; 
+                updateCharts(); 
+            } 
+        }); 
+    }); 
+</script>
+{% endblock %} 

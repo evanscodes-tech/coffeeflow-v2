@@ -18,6 +18,7 @@ urlpatterns = [
     path('deliveries/', include('deliveries.urls')),
     path('payments/', include('payments.urls')),
     path('api/', include('mobile_api.urls')),
+     path('reports/', include('reports.urls')),
 ]
 
 if settings.DEBUG:

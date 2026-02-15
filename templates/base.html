@@ -16,6 +16,7 @@
                 {% if user.is_authenticated %} 
                     <span class="user-greeting"><i class="fas fa-user"></i> {{ user.username }}</span> 
                     <a href="{% url 'profile' %}"><i class="fas fa-id-card"></i> Profile</a> 
+                    <a href="{% url 'reports:dashboard' %}"><i class="fas fa-chart-line"></i> Analytics</a>
                     <a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a> 
                     {% if user.is_staff %} 
                         <a href="/admin/" class="btn btn-danger"><i class="fas fa-lock"></i> Admin</a> 
@@ -44,4 +45,4 @@
         <p><i class="far fa-copyright"></i> {% now "Y" %} CoffeeFlow. All rights reserved.</p> 
     </footer> 
 </body> 
-</html> 
+</html>

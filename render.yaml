@@ -1,0 +1,26 @@
+services: 
+  - type: web 
+    name: coffeeflow-v3 
+    runtime: python 
+Operations to perform:
+  Apply all migrations: accounts, admin, admin_interface, auth, authtoken, contenttypes, deliveries, farmers, reports, sessions
+Running migrations:
+  No migrations to apply.
+    startCommand: gunicorn coffeeflow.wsgi:application 
+    envVars: 
+      - key: SECRET_KEY 
+        generateValue: true 
+      - key: DEBUG 
+        value: false 
+      - key: ALLOWED_HOSTS 
+        value: .onrender.com 
+      - key: DATABASE_URL 
+        fromDatabase: 
+          name: coffeeflow-db 
+          property: connectionString 
+ECHO is on.
+databases: 
+  - name: coffeeflow-db 
+    databaseName: coffeeflow 
+    user: coffeeflow_user 
+    plan: free 
