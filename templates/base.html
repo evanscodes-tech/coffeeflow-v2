@@ -9,26 +9,30 @@
     <link rel="stylesheet" href="{% static 'css/style.css' %}"> 
 </head> 
 <body> 
-    <nav class="navbar"> 
-        <div class="nav-container"> 
-            <a href="{% url 'home' %}" class="logo"><i class="fas fa-mug-hot"></i> CoffeeFlow</a> 
-            <div class="nav-links"> 
-                {% if user.is_authenticated %} 
-                    <span class="user-greeting"><i class="fas fa-user"></i> {{ user.username }}</span> 
-                    <a href="{% url 'profile' %}"><i class="fas fa-id-card"></i> Profile</a> 
-                    <a href="{% url 'reports:dashboard' %}"><i class="fas fa-chart-line"></i> Analytics</a>
-                    <a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a> 
-                    {% if user.is_staff %} 
-                        <a href="/admin/" class="btn btn-danger"><i class="fas fa-lock"></i> Admin</a> 
-                    {% endif %} 
-                {% else %} 
-                    <a href="{% url 'login' %}"><i class="fas fa-sign-in-alt"></i> Login</a> 
-                    <a href="{% url 'register' %}" class="btn btn-primary"><i class="fas fa-user-plus"></i> Register</a> 
-                {% endif %} 
-            </div> 
-        </div> 
-    </nav> 
- 
+   <nav class="navbar">
+    <div class="nav-container">
+        <a href="/" class="logo"><i class="fas fa-mug-hot"></i> CoffeeFlow</a>
+        <div class="nav-links">
+            {% if user.is_authenticated %}
+                <span class="user-greeting"><i class="fas fa-user"></i> {{ user.username }}</span>
+                <a href="/accounts/profile/"><i class="fas fa-id-card"></i> Profile</a>
+                <a href="/reports/"><i class="fas fa-chart-line"></i> Analytics</a>
+                <form method="post" action="/accounts/logout/" style="display: inline;">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-secondary" style="border: none;">
+        <i class="fas fa-sign-out-alt"></i> Logout
+    </button>
+</form>
+                {% if user.is_staff %}
+                    <a href="/admin/" class="btn btn-danger"><i class="fas fa-lock"></i> Admin</a>
+                {% endif %}
+            {% else %}
+                <a href="/accounts/login/"><i class="fas fa-sign-in-alt"></i> Login</a>
+                <a href="/accounts/register/" class="btn btn-primary"><i class="fas fa-user-plus"></i> Register</a>
+            {% endif %}
+        </div>
+    </div>
+</nav>
     {% if messages %} 
     <div class="messages"> 
         {% for message in messages %} 

@@ -1,0 +1,202 @@
+{% extends "admin/base_site.html" %} 
+{% load i18n static %} 
+ 
+{% block extrastyle %} 
+{{ block.super }} 
+<style> 
+    .dashboard-container { 
+        display: grid; 
+        grid-template-columns: 2fr 1fr; 
+        gap: 20px; 
+        margin-top: 20px; 
+    } 
+    .stats-grid { 
+        display: grid; 
+        grid-template-columns: repeat(3, 1fr); 
+        gap: 15px; 
+        margin-bottom: 20px; 
+    } 
+    .stat-card { 
+        background: white; 
+        border-radius: 8px; 
+        padding: 20px; 
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05); 
+        text-align: center; 
+        border-left: 4px solid #8B5A2B; 
+    } 
+    .stat-number { 
+        font-size: 2rem; 
+        font-weight: bold; 
+        color: #8B5A2B; 
+    } 
+    .stat-label { 
+        color: #6c757d; 
+        margin-top: 5px; 
+    } 
+    .recent-actions-enhanced { 
+        background: white; 
+        border-radius: 8px; 
+        padding: 20px; 
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05); 
+    } 
+    .recent-actions-enhanced h2 { 
+        margin-top: 0; 
+        color: #8B5A2B; 
+        border-bottom: 2px solid #C4A35A; 
+        padding-bottom: 10px; 
+    } 
+    .action-item { 
+        display: flex; 
+        align-items: center; 
+        padding: 12px; 
+        border-bottom: 1px solid #eee; 
+    } 
+    .action-item:hover { 
+        background: #f8f9fa; 
+    } 
+    .action-icon { 
+        width: 40px; 
+        height: 40px; 
+        border-radius: 50%; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        margin-right: 15px; 
+        font-size: 1.2rem; 
+    } 
+    .icon-add { background: #d4edda; color: #155724; } 
+    .icon-change { background: #fff3cd; color: #856404; } 
+    .icon-delete { background: #f8d7da; color: #721c24; } 
+    .action-details { 
+        flex: 1; 
+    } 
+    .action-title { 
+        font-weight: 600; 
+        color: #495057; 
+    } 
+    .action-meta { 
+        font-size: 0.85rem; 
+        color: #6c757d; 
+        display: flex; 
+        gap: 15px; 
+        margin-top: 5px; 
+    } 
+    .module { 
+        background: white; 
+        border-radius: 8px; 
+        padding: 20px; 
+        margin-bottom: 20px; 
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05); 
+    } 
+    .module h2 { 
+        margin-top: 0; 
+        color: #8B5A2B; 
+        border-bottom: 2px solid #C4A35A; 
+        padding-bottom: 10px; 
+        margin-bottom: 15px; 
+    } 
+    .button { 
+        background: #8B5A2B; 
+        color: white; 
+        padding: 10px 15px; 
+        border-radius: 4px; 
+        text-decoration: none; 
+        display: inline-block; 
+        margin-right: 10px; 
+        margin-bottom: 10px; 
+        border: none; 
+        cursor: pointer; 
+        transition: all 0.2s; 
+    } 
+    .button:hover { 
+        background: #5D3A1A; 
+        transform: translateY(-2px); 
+        box-shadow: 0 5px 15px rgba(139, 90, 43, 0.3); 
+    } 
+</style> 
+{% endblock %} 
+ 
+{% block content %} 
+<div class="dashboard-container"> 
+    <div class="main-content"> 
+        <div class="stats-grid"> 
+            <div class="stat-card"> 
+                <div class="stat-number" id="total-farmers">0</div> 
+                <div class="stat-label">Total Farmers</div> 
+            </div> 
+            <div class="stat-card"> 
+                <div class="stat-number" id="total-deliveries">0</div> 
+                <div class="stat-label">Total Deliveries</div> 
+            </div> 
+            <div class="stat-card"> 
+                <div class="stat-number" id="total-kgs">0 kg</div> 
+                <div class="stat-label">Coffee Delivered</div> 
+            </div> 
+        </div> 
+        <div class="module"> 
+            <h2>Quick Actions</h2> 
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;"> 
+                <a href="{% url 'admin:farmers_farmerprofile_add' %}" class="button">? Add Farmer</a> 
+                <a href="{% url 'admin:deliveries_coffeebatch_add' %}" class="button">?? Add Delivery</a> 
+                <a href="/reports/" class="button">?? Analytics Dashboard</a> 
+            </div> 
+        </div> 
+        <div class="module"> 
+            <h2>{% translate "Recent actions" %}</h2> 
+            {% load log %} 
+            {% get_admin_log 10 as admin_log for_user user %} 
+            {% if not admin_log %} 
+                <p>{% translate 'None available' %}</p> 
+            {% else %} 
+                <div style="margin-top: 15px;"> 
+                {% for entry in admin_log %} 
+                    <div class="action-item"> 
+                        <div class="action-icon {% if entry.is_addition %}icon-add{% elif entry.is_change %}icon-change{% else %}icon-delete{% endif %}"> 
+                            {% if entry.is_addition %}?{% elif entry.is_change %}??{% else %}???{% endif %} 
+                        </div> 
+                        <div class="action-details"> 
+                            <div class="action-title">{{ entry.object_repr }}</div> 
+                            <div class="action-meta"> 
+                                <span>{{ entry.content_type.name }}</span> 
+                                <span>{{ entry.user }}</span> 
+                            </div> 
+                        </div> 
+                    </div> 
+                {% endfor %} 
+                </div> 
+            {% endif %} 
+        </div> 
+    </div> 
+    <div class="sidebar"> 
+        <div class="module"> 
+            <h2>System Status</h2> 
+            <div style="padding: 10px;"> 
+                <p>? Django running</p> 
+                <p>? Database connected</p> 
+                <p>? SMS ready</p> 
+                <p>? Mobile app pending</p> 
+            </div> 
+        </div> 
+        <div class="module"> 
+            <h2>Quick Links</h2> 
+            <ul style="list-style: none; padding: 0;"> 
+                <li><a href="/reports/" style="display: block; padding: 8px; text-decoration: none; color: #8B5A2B;">?? Analytics Dashboard</a></li> 
+                <li><a href="/api/test/" style="display: block; padding: 8px; text-decoration: none; color: #8B5A2B;">?? API Test</a></li> 
+                <li><a href="/admin/farmers/farmerprofile/" style="display: block; padding: 8px; text-decoration: none; color: #8B5A2B;">?? Farmers</a></li> 
+                <li><a href="/admin/deliveries/coffeebatch/" style="display: block; padding: 8px; text-decoration: none; color: #8B5A2B;">?? Deliveries</a></li> 
+            </ul> 
+        </div> 
+    </div> 
+</div> 
+ 
+<script> 
+    // Load stats via AJAX 
+    fetch('/reports/api/stats/') 
+        .then(response => response.json()) 
+        .then(data => { 
+            document.getElementById('total-farmers').textContent = data.total_farmers; 
+            document.getElementById('total-deliveries').textContent = data.total_deliveries; 
+            document.getElementById('total-kgs').textContent = data.total_kgs.toFixed(0) + ' kg'; 
+        }); 
+</script> 
+{% endblock %} 

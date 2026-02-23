@@ -7,11 +7,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Add apps folder to path
 import sys
-sys.path.insert(0, str(BASE_DIR / 'apps'))
+#sys.path.insert(0, str(BASE_DIR / 'apps'))
 
-SECRET_KEY =  config('SECRET_KEY')
-DEBUG =  config('DEBUG', default=False, cast=bool)
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='').split(',')
+SECRET_KEY = 'django-insecure-your-secret-key-here'
+DEBUG =  False
+ALLOWED_HOSTS =  ['127.0.0.1', 'localhost', '.vercel.app', '.now.sh']
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
@@ -35,12 +35,12 @@ INSTALLED_APPS = [
     'admincharts',
     
     # Local apps
-    'accounts',
-    'farmers',
-    'deliveries',
-    'payments',
-    'mobile_api',
-    'reports',
+    'apps.accounts',
+    'apps.farmers',
+    'apps.deliveries',
+    'apps.payments',
+    'apps.mobile_api',
+    'apps.reports',
 ]
 
 MIDDLEWARE = [
@@ -106,7 +106,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Auth settings
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'home'
-LOGOUT_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL =  '/'
 
 # Email settings
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

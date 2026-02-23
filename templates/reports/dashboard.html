@@ -117,6 +117,9 @@
 {% endblock %} 
  
 {% block content %} 
+<!-- DEBUG INFO - Will show what's happening -->
+
+
 <div class="dashboard-header"> 
     <h1><i class="fas fa-chart-line"></i> Analytics Dashboard</h1> 
     <p>Real-time insights into your coffee collection operations</p> 
@@ -230,205 +233,52 @@
         </div> 
     </div> 
 </div> 
+<script>
+    // This runs at the bottom and loads data
+    fetch('/reports/api/stats/')
+        .then(r => r.json())
+        .then(data => {
+            document.getElementById('totalFarmers').innerText = data.total_farmers;
+            document.getElementById('totalDeliveries').innerText = data.total_deliveries;
+            document.getElementById('totalKgs').innerText = data.total_kgs.toFixed(0) + ' kg';
+            document.getElementById('totalPayments').innerText = 'KES ' + data.total_payments.toFixed(0);
+            document.getElementById('debug-stats').innerText = '✅ Dashboard loaded successfully!';
+        });
+</script>
 {% endblock %} 
  
 {% block extra_js %} 
-<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script> 
-<script> 
-    // Chart instances
-    let deliveryChart, qualityChart, predictionChart, seasonalityChart;
- 
-    function updateLastUpdated() {
-        const now = new Date();
-        const timeString = now.toLocaleTimeString();
-        document.getElementById('lastUpdated').textContent = `Last updated: ${timeString}`;
-    }
- 
-    function loadStats() { 
-        fetch('/reports/api/stats/') 
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('totalFarmers').textContent = data.total_farmers; 
-                document.getElementById('totalDeliveries').textContent = data.total_deliveries; 
-                document.getElementById('totalKgs').textContent = data.total_kgs.toFixed(0) + ' kg'; 
-                document.getElementById('totalPayments').textContent = 'KES ' + data.total_payments.toFixed(0); 
-            })
-            .catch(error => console.error('Error loading stats:', error));
-    } 
- 
-    function loadDeliveryChart() { 
-        const days = document.getElementById('dateRange').value; 
-        fetch(`/reports/api/delivery-summary/?days=${days}`) 
-            .then(response => response.json())
-            .then(data => {
-                const ctx = document.getElementById('deliveryChart').getContext('2d'); 
-                if (deliveryChart) deliveryChart.destroy(); 
-                deliveryChart = new Chart(ctx, { 
-                    type: 'line', 
-                    data: { 
-                        labels: data.labels, 
-                        datasets: data.datasets 
-                    }, 
-                    options: { 
-                        responsive: true, 
-                        maintainAspectRatio: false,
-                        scales: { 
-                            y: { type: 'linear', display: true, position: 'left' }, 
-                            y1: { type: 'linear', display: true, position: 'right', grid: { drawOnChartArea: false } } 
-                        } 
-                    } 
-                }); 
-            })
-            .catch(error => console.error('Error loading delivery chart:', error));
-    } 
- 
-    function loadQualityChart() { 
-        fetch('/reports/api/quality-distribution/') 
-            .then(response => response.json())
-            .then(data => {
-                const ctx = document.getElementById('qualityChart').getContext('2d'); 
-                if (qualityChart) qualityChart.destroy(); 
-                qualityChart = new Chart(ctx, { 
-                    type: 'pie', 
-                    data: { 
-                        labels: data.labels, 
-                        datasets: data.datasets 
-                    }, 
-                    options: { 
-                        responsive: true, 
-                        maintainAspectRatio: false, 
-                        plugins: { legend: { position: 'bottom' } } 
-                    } 
-                }); 
-            })
-            .catch(error => console.error('Error loading quality chart:', error));
-    } 
- 
-    function loadTopFarmers() { 
-        fetch('/reports/api/top-farmers/') 
-            .then(response => response.json())
-            .then(data => {
-                const tbody = document.getElementById('topFarmersTable'); 
-                tbody.innerHTML = ''; 
-                data.data.forEach(farmer => {
-                    const row = document.createElement('tr'); 
-                    row.innerHTML = ` 
-                        <td>${farmer.name}</td> 
-                        <td>${farmer.farm}</td> 
-                        <td>${farmer.total_kgs.toFixed(2)} kg</td> 
-                        <td>${farmer.deliveries}</td> 
-                        <td>KES ${farmer.payments.toFixed(2)}</td> 
-                    `; 
-                    tbody.appendChild(row); 
-                }); 
-            })
-            .catch(error => console.error('Error loading top farmers:', error));
-    } 
- 
-    function loadPredictionData() { 
-        fetch('/reports/api/harvest-prediction/') 
-            .then(response => response.json())
-            .then(data => {
-                // Prediction chart
-                const predCtx = document.getElementById('predictionChart').getContext('2d'); 
-                if (predictionChart) predictionChart.destroy(); 
-                
-                const predLabels = data.predictions.map(p => p.date);
-                const predValues = data.predictions.map(p => p.predicted_kgs);
-                
-                predictionChart = new Chart(predCtx, { 
-                    type: 'line', 
-                    data: { 
-                        labels: predLabels, 
-                        datasets: [{ 
-                            label: 'Predicted Harvest (kg)', 
-                            data: predValues, 
-                            borderColor: '#8B5A2B', 
-                            backgroundColor: 'rgba(139, 90, 43, 0.1)' 
-                        }] 
-                    }, 
-                    options: { 
-                        responsive: true, 
-                        maintainAspectRatio: false, 
-                        plugins: { 
-                            title: { display: true, text: '30-Day Harvest Prediction' } 
-                        } 
-                    } 
-                }); 
- 
-                // Seasonality chart
-                const seaCtx = document.getElementById('seasonalityChart').getContext('2d'); 
-                if (seasonalityChart) seasonalityChart.destroy(); 
-                
-                const seaLabels = data.seasonality.map(s => s.month);
-                const seaValues = data.seasonality.map(s => s.avg_kgs);
-                
-                seasonalityChart = new Chart(seaCtx, { 
-                    type: 'bar', 
-                    data: { 
-                        labels: seaLabels, 
-                        datasets: [{ 
-                            label: 'Average Monthly Harvest (kg)', 
-                            data: seaValues, 
-                            backgroundColor: '#C4A35A' 
-                        }] 
-                    }, 
-                    options: { 
-                        responsive: true, 
-                        maintainAspectRatio: false, 
-                        plugins: { 
-                            title: { display: true, text: 'Seasonality Pattern' } 
-                        } 
-                    } 
-                }); 
-            })
-            .catch(error => console.error('Error loading prediction data:', error));
-    } 
- 
-    function loadAllData() {
-        loadStats(); 
-        loadDeliveryChart(); 
-        loadQualityChart(); 
-        loadTopFarmers(); 
-        loadPredictionData(); 
-        updateLastUpdated();
-    }
- 
-    function updateCharts() { 
-        loadDeliveryChart(); 
-        loadQualityChart(); 
-        loadPredictionData(); 
-    } 
- 
-    // Global refresh function
-    function forceRefresh() {
-        loadAllData();
-    }
- 
-    function exportData(format) { 
-        const reportType = prompt('Enter report type (deliveries, farmers):', 'deliveries'); 
-        if (reportType) { 
-            location.href = `/reports/export/${reportType}/?format=${format}`; 
-        } 
-    } 
- 
-    // Initialize on page load
-    document.addEventListener('DOMContentLoaded', function() { 
-        loadAllData();
+<script>
+    // Wait for everything to be ready
+    function loadDashboard() {
+        console.log('Trying to load dashboard...');
         
-        // Auto-refresh every 30 seconds
-        setInterval(function() {
-            loadAllData();
-        }, 30000);
- 
-        document.getElementById('dateRange').addEventListener('change', function(e) { 
-            if (e.target.value === 'custom') { 
-                document.getElementById('customDateRange').style.display = 'flex'; 
-            } else { 
-                document.getElementById('customDateRange').style.display = 'none'; 
-                updateCharts(); 
-            } 
-        }); 
-    }); 
+        // Check if elements exist
+        const farmersEl = document.getElementById('totalFarmers');
+        if (!farmersEl) {
+            console.log('Elements not ready, trying again in 500ms');
+            setTimeout(loadDashboard, 500);
+            return;
+        }
+        
+        console.log('Elements found, loading data...');
+        
+        // Load the data
+        fetch('/reports/api/stats/')
+            .then(r => r.json())
+            .then(data => {
+                document.getElementById('totalFarmers').innerText = data.total_farmers;
+                document.getElementById('totalDeliveries').innerText = data.total_deliveries;
+                document.getElementById('totalKgs').innerText = data.total_kgs.toFixed(0) + ' kg';
+                document.getElementById('totalPayments').innerText = 'KES ' + data.total_payments.toFixed(0);
+                document.getElementById('debug-stats').innerText = '✅ WORKING! Data: ' + JSON.stringify(data);
+            })
+            .catch(err => {
+                document.getElementById('debug-stats').innerText = '❌ Error: ' + err;
+            });
+    }
+    
+    // Start trying to load
+    loadDashboard();
 </script>
-{% endblock %} 
+{% endblock %}

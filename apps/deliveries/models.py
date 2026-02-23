@@ -2,7 +2,7 @@ from django.db import models
 from django.conf import settings 
 from django.core.validators import MinValueValidator 
 from django.utils import timezone 
-from farmers.models import FarmerProfile 
+from apps.farmers.models import FarmerProfile 
  
 class CoffeeBatch(models.Model): 
     BATCH_STATUS = [ 

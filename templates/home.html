@@ -11,12 +11,12 @@
  
     {% if not user.is_authenticated %} 
     <div style="display: flex; gap: 20px; justify-content: center;"> 
-        <a href="{% url 'login' %}" class="btn btn-secondary" style="padding: 15px 40px;"><i class="fas fa-sign-in-alt"></i> Login</a> 
-        <a href="{% url 'register' %}" class="btn btn-primary" style="padding: 15px 40px;"><i class="fas fa-user-plus"></i> Register</a> 
+        <a href="/accounts/login/" class="btn btn-secondary" style="padding: 15px 40px;"><i class="fas fa-sign-in-alt"></i> Login</a> 
+        <a href="/accounts/register/" class="btn btn-primary" style="padding: 15px 40px;"><i class="fas fa-user-plus"></i> Register</a> 
     </div> 
     {% else %} 
     <div> 
-        <a href="{% url 'profile' %}" class="btn btn-primary" style="padding: 15px 40px;"><i class="fas fa-id-card"></i> Go to Profile</a> 
+        <a href="/accounts/profile/" class="btn btn-primary" style="padding: 15px 40px;"><i class="fas fa-id-card"></i> Go to Profile</a> 
     </div> 
     {% endif %} 
 </div> 
@@ -38,4 +38,4 @@
         <p>Manage farmer payments and generate reports</p> 
     </div> 
 </div> 
-{% endblock %} 
+{% endblock %}

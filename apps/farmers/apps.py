@@ -1,5 +1,5 @@
 from django.apps import AppConfig
 
-
 class FarmersConfig(AppConfig):
-    name = 'farmers'
+    default_auto_field = 'django.db.models.BigAutoField'
+    name = 'apps.farmers'

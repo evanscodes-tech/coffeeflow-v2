@@ -8,8 +8,8 @@ import csv
 import pandas as pd 
 from io import BytesIO 
  
-from farmers.models import FarmerProfile 
-from deliveries.models import CoffeeBatch 
+from apps.farmers.models import FarmerProfile 
+from apps.deliveries.models import CoffeeBatch 
 from .models import ReportTemplate, ReportExport, DashboardWidget 
  
 @staff_member_required 
