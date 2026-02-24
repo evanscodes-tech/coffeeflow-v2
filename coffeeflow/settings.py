@@ -9,8 +9,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 import sys
 #sys.path.insert(0, str(BASE_DIR / 'apps'))
 
-SECRET_KEY = 'django-insecure-your-secret-key-here'
-DEBUG =  False
+SECRET_KEY =  config('SECRET_KEY', default='django-insecure-default-key')
+DEBUG = config('DEBUG', default=True, cast=bool)
 ALLOWED_HOSTS =  ['127.0.0.1', 'localhost', '.vercel.app', '.now.sh']
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
@@ -73,12 +73,26 @@ TEMPLATES = [
     },
 ]
 
-DATABASES = {
-    'default': dj_database_url.config(
-        default=config('DATABASE_URL', default='sqlite:///db.sqlite3'),
-        conn_max_age=600
-    )
-}
+# Database configuration with development/production split
+DEVELOPMENT_MODE = os.environ.get('DEVELOPMENT_MODE', 'True') == 'True'
+
+if DEVELOPMENT_MODE:
+    # Local development with SQLite
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+else:
+    # Production with Neon PostgreSQL
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=os.environ.get('DATABASE_URL'),
+            conn_max_age=600,
+            ssl_require=True
+        )
+    }
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
