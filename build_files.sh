@@ -1,14 +1,14 @@
 #!/bin/bash
 echo "📦 Installing dependencies..."
-pip install -r requirements.txt
+/usr/local/bin/python3 -m pip install -r requirements.txt
+
+echo "📁 Collecting static files..."
+/usr/local/bin/python3 manage.py collectstatic --noinput
 
 echo "📁 Creating output directory..."
 mkdir -p /vercel/output/staticfiles
 
-echo "📁 Collecting static files..."
-python manage.py collectstatic --noinput
-
-echo "📁 Copying static files to output..."
-cp -r staticfiles /vercel/output/
+echo "📁 Copying static files..."
+cp -r staticfiles/* /vercel/output/staticfiles/ 2>/dev/null || :
 
 echo "✅ Build completed!"
