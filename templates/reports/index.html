@@ -1,0 +1,116 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block content %}
+<div style="padding: 20px;">
+    <div style="margin-bottom: 30px;">
+        <h2 style="color: #333; margin: 0 0 10px 0;">📊 Reports Dashboard</h2>
+        <hr style="border: none; border-top: 1px solid #ddd; margin: 10px 0;">
+    </div>
+
+    <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 30px;">
+        <!-- Collection Report Card -->
+        <div style="flex: 1; min-width: 250px; background: white; border: 1px solid #ddd; border-radius: 4px; padding: 20px;">
+            <div style="margin-bottom: 15px;">
+                <div style="font-size: 24px; margin-bottom: 10px;">📈</div>
+                <h3 style="margin: 0 0 5px 0; color: #333;">Collection Report</h3>
+                <p style="margin: 0; color: #666; font-size: 14px;">Daily/Weekly/Monthly coffee collection with PDF export</p>
+            </div>
+            <div>
+                <a href="{% url 'reports:collection_report' %}" style="display: inline-block; background: #007bff; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px; font-size: 14px;">
+                    View Report →
+                </a>
+            </div>
+        </div>
+
+        <!-- Farmers Card -->
+        <div style="flex: 1; min-width: 250px; background: white; border: 1px solid #ddd; border-radius: 4px; padding: 20px;">
+            <div style="margin-bottom: 15px;">
+                <div style="font-size: 24px; margin-bottom: 10px;">👥</div>
+                <h3 style="margin: 0 0 5px 0; color: #333;">Farmers</h3>
+                <p style="margin: 0; color: #666; font-size: 14px;">Export farmer registration data</p>
+            </div>
+            <div>
+                <a href="{% url 'reports:export_farmers' %}?format=excel" style="display: inline-block; background: #28a745; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px; font-size: 14px; margin-right: 10px;">
+                    Excel
+                </a>
+                <a href="{% url 'reports:export_farmers' %}?format=csv" style="display: inline-block; background: #6c757d; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px; font-size: 14px;">
+                    CSV
+                </a>
+            </div>
+        </div>
+
+        <!-- Deliveries Card -->
+        <div style="flex: 1; min-width: 250px; background: white; border: 1px solid #ddd; border-radius: 4px; padding: 20px;">
+            <div style="margin-bottom: 15px;">
+                <div style="font-size: 24px; margin-bottom: 10px;">🚚</div>
+                <h3 style="margin: 0 0 5px 0; color: #333;">Deliveries</h3>
+                <p style="margin: 0; color: #666; font-size: 14px;">Export all delivery records</p>
+            </div>
+            <div>
+                <a href="{% url 'reports:export_deliveries' %}?format=excel" style="display: inline-block; background: #28a745; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px; font-size: 14px; margin-right: 10px;">
+                    Excel
+                </a>
+                <a href="{% url 'reports:export_deliveries' %}?format=csv" style="display: inline-block; background: #6c757d; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px; font-size: 14px;">
+                    CSV
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+        <!-- Quick Actions -->
+        <div style="flex: 1; background: white; border: 1px solid #ddd; border-radius: 4px;">
+            <div style="padding: 15px; border-bottom: 1px solid #ddd; background: #f9f9f9;">
+                <h4 style="margin: 0; color: #333;">Quick Actions</h4>
+            </div>
+            <div style="padding: 15px;">
+                <ul style="list-style: none; padding: 0; margin: 0;">
+                    <li style="padding: 10px 0; border-bottom: 1px solid #eee;">
+                        <a href="{% url 'reports:collection_report' %}?period=day" style="color: #007bff; text-decoration: none;">
+                            📅 Today's Collection Report
+                        </a>
+                    </li>
+                    <li style="padding: 10px 0; border-bottom: 1px solid #eee;">
+                        <a href="{% url 'reports:collection_report' %}?period=week" style="color: #007bff; text-decoration: none;">
+                            📆 This Week's Collection Report
+                        </a>
+                    </li>
+                    <li style="padding: 10px 0;">
+                        <a href="{% url 'reports:collection_report' %}?period=month" style="color: #007bff; text-decoration: none;">
+                            🗓️ This Month's Collection Report
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Export Options -->
+        <div style="flex: 1; background: white; border: 1px solid #ddd; border-radius: 4px;">
+            <div style="padding: 15px; border-bottom: 1px solid #ddd; background: #f9f9f9;">
+                <h4 style="margin: 0; color: #333;">Export Options</h4>
+            </div>
+            <div style="padding: 15px;">
+                <div style="margin-bottom: 20px;">
+                    <strong style="display: block; margin-bottom: 10px; color: #333;">Farmers Export:</strong>
+                    <a href="{% url 'reports:export_farmers' %}?format=csv" style="display: inline-block; background: #6c757d; color: white; padding: 6px 12px; text-decoration: none; border-radius: 4px; font-size: 13px; margin-right: 10px;">
+                        CSV
+                    </a>
+                    <a href="{% url 'reports:export_farmers' %}?format=excel" style="display: inline-block; background: #28a745; color: white; padding: 6px 12px; text-decoration: none; border-radius: 4px; font-size: 13px;">
+                        Excel
+                    </a>
+                </div>
+                <div>
+                    <strong style="display: block; margin-bottom: 10px; color: #333;">Deliveries Export:</strong>
+                    <a href="{% url 'reports:export_deliveries' %}?format=csv" style="display: inline-block; background: #6c757d; color: white; padding: 6px 12px; text-decoration: none; border-radius: 4px; font-size: 13px; margin-right: 10px;">
+                        CSV
+                    </a>
+                    <a href="{% url 'reports:export_deliveries' %}?format=excel" style="display: inline-block; background: #28a745; color: white; padding: 6px 12px; text-decoration: none; border-radius: 4px; font-size: 13px;">
+                        Excel
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

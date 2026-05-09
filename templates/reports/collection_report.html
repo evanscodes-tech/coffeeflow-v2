@@ -1,0 +1,168 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block content %}
+<div style="padding: 20px; max-width: 1400px; margin: 0 auto;">
+    <!-- Header -->
+    <div style="margin-bottom: 25px;">
+        <h2 style="margin: 0 0 5px 0; color: #333;">📊 Coffee Collection Report</h2>
+        <hr style="border: none; border-top: 1px solid #ddd; margin: 10px 0;">
+    </div>
+
+    <!-- Filter Form -->
+    <div style="background: #f9f9f9; border: 1px solid #ddd; padding: 15px; margin-bottom: 20px;">
+        <form method="get" style="display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-end;">
+            <div>
+                <label style="display: block; margin-bottom: 5px; font-size: 12px; color: #666;">Period</label>
+                <select name="period" onchange="this.form.submit()" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 3px;">
+                    <option value="day" {% if period == 'day' %}selected{% endif %}>Daily</option>
+                    <option value="week" {% if period == 'week' %}selected{% endif %}>Weekly</option>
+                    <option value="month" {% if period == 'month' %}selected{% endif %}>Monthly</option>
+                </select>
+            </div>
+            <div>
+                <label style="display: block; margin-bottom: 5px; font-size: 12px; color: #666;">Start Date</label>
+                <input type="date" name="start_date" value="{{ start_date|date:'Y-m-d' }}" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 3px;">
+            </div>
+            <div>
+                <label style="display: block; margin-bottom: 5px; font-size: 12px; color: #666;">End Date</label>
+                <input type="date" name="end_date" value="{{ end_date|date:'Y-m-d' }}" style="padding: 6px 10px; border: 1px solid #ddd; border-radius: 3px;">
+            </div>
+            <div>
+                <button type="submit" style="background: #007bff; color: white; border: none; padding: 6px 15px; border-radius: 3px; cursor: pointer;">Filter</button>
+                {% if request.GET.download != 'pdf' %}
+                <a href="?{{ request.GET.urlencode }}&download=pdf" style="background: #dc3545; color: white; border: none; padding: 6px 15px; border-radius: 3px; text-decoration: none; margin-left: 10px; display: inline-block;">Download PDF</a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+
+    <!-- Stats Cards -->
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 25px;">
+        <div style="background: white; border: 1px solid #ddd; padding: 15px;">
+            <div style="font-size: 24px; font-weight: bold; color: #333;">{{ total_weight|floatformat:0 }}</div>
+            <div style="color: #666; font-size: 12px;">Total Coffee (kg)</div>
+        </div>
+        <div style="background: white; border: 1px solid #ddd; padding: 15px;">
+            <div style="font-size: 24px; font-weight: bold; color: #333;">{{ total_batches }}</div>
+            <div style="color: #666; font-size: 12px;">Total Batches</div>
+        </div>
+        <div style="background: white; border: 1px solid #ddd; padding: 15px;">
+            <div style="font-size: 24px; font-weight: bold; color: #333;">{{ total_farmers }}</div>
+            <div style="color: #666; font-size: 12px;">Active Farmers</div>
+        </div>
+        <div style="background: white; border: 1px solid #ddd; padding: 15px;">
+            <div style="font-size: 24px; font-weight: bold; color: #333;">{{ avg_weight|floatformat:1 }}</div>
+            <div style="color: #666; font-size: 12px;">Avg Batch (kg)</div>
+        </div>
+    </div>
+
+    <!-- Two Column Layout -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px;">
+        <!-- Daily Breakdown -->
+        <div style="background: white; border: 1px solid #ddd;">
+            <div style="padding: 12px 15px; border-bottom: 1px solid #ddd; background: #f9f9f9;">
+                <strong>Daily Breakdown</strong>
+            </div>
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background: #f9f9f9; border-bottom: 1px solid #ddd;">
+                            <th style="padding: 10px; text-align: left; font-size: 13px;">Date</th>
+                            <th style="padding: 10px; text-align: center; font-size: 13px;">Batches</th>
+                            <th style="padding: 10px; text-align: right; font-size: 13px;">Weight (kg)</th>
+                            <th style="padding: 10px; text-align: center; font-size: 13px;">Farmers</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for day in daily_breakdown %}
+                        <tr style="border-bottom: 1px solid #eee;">
+                            <td style="padding: 8px 10px; font-size: 13px;">{{ day.delivery_date_only|date:"Y-m-d" }}</td>
+                            <td style="padding: 8px 10px; text-align: center; font-size: 13px;">{{ day.batches }}</td>
+                            <td style="padding: 8px 10px; text-align: right; font-size: 13px;">{{ day.weight|floatformat:0 }}</td>
+                            <td style="padding: 8px 10px; text-align: center; font-size: 13px;">{{ day.farmers }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" style="padding: 20px; text-align: center; color: #999;">No data for this period</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Grade Distribution -->
+        <div style="background: white; border: 1px solid #ddd;">
+            <div style="padding: 12px 15px; border-bottom: 1px solid #ddd; background: #f9f9f9;">
+                <strong>Grade Distribution</strong>
+            </div>
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background: #f9f9f9; border-bottom: 1px solid #ddd;">
+                            <th style="padding: 10px; text-align: left; font-size: 13px;">Grade</th>
+                            <th style="padding: 10px; text-align: center; font-size: 13px;">Batches</th>
+                            <th style="padding: 10px; text-align: right; font-size: 13px;">Weight (kg)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for grade in grade_distribution %}
+                        <tr style="border-bottom: 1px solid #eee;">
+                            <td style="padding: 8px 10px; font-size: 13px;">{{ grade.quality_grade|default:"Unspecified"|title }}</td>
+                            <td style="padding: 8px 10px; text-align: center; font-size: 13px;">{{ grade.count }}</td>
+                            <td style="padding: 8px 10px; text-align: right; font-size: 13px;">{{ grade.total_weight|floatformat:0 }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="3" style="padding: 20px; text-align: center; color: #999;">No data available</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Batches -->
+    <div style="background: white; border: 1px solid #ddd;">
+        <div style="padding: 12px 15px; border-bottom: 1px solid #ddd; background: #f9f9f9;">
+            <strong>Recent Batches</strong>
+        </div>
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background: #f9f9f9; border-bottom: 1px solid #ddd;">
+                        <th style="padding: 10px; text-align: left; font-size: 13px;">Date</th>
+                        <th style="padding: 10px; text-align: left; font-size: 13px;">Farmer</th>
+                        <th style="padding: 10px; text-align: right; font-size: 13px;">Weight (kg)</th>
+                        <th style="padding: 10px; text-align: left; font-size: 13px;">Grade</th>
+                        <th style="padding: 10px; text-align: center; font-size: 13px;">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for batch in batches %}
+                    <tr style="border-bottom: 1px solid #eee;">
+                        <td style="padding: 8px 10px; font-size: 13px;">{{ batch.delivery_date|date:"Y-m-d" }}</td>
+                        <td style="padding: 8px 10px; font-size: 13px;">{{ batch.farmer.full_name }}</td>
+                        <td style="padding: 8px 10px; text-align: right; font-size: 13px;">{{ batch.cherry_weight_kg }}</td>
+                        <td style="padding: 8px 10px; font-size: 13px;">{{ batch.get_quality_grade_display|default:"—" }}</td>
+                        <td style="padding: 8px 10px; text-align: center; font-size: 13px;">
+                            {% if batch.payment_status == 'paid' %}
+                            <span style="background: #28a745; color: white; padding: 2px 6px; border-radius: 3px; font-size: 11px;">Paid</span>
+                            {% else %}
+                            <span style="background: #ffc107; color: #333; padding: 2px 6px; border-radius: 3px; font-size: 11px;">Pending</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" style="padding: 20px; text-align: center; color: #999;">No batches in this period</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -7,10 +7,21 @@ from datetime import timedelta, datetime
 import csv
 import pandas as pd
 from io import BytesIO
+from django.template.loader import get_template
+from xhtml2pdf import pisa
 
 from apps.farmers.models import FarmerProfile
 from apps.deliveries.models import CoffeeBatch
 from .models import ReportTemplate, ReportExport, DashboardWidget
+
+# ========== REPORTS INDEX / DASHBOARD ==========
+
+@staff_member_required
+def reports_index(request):
+    """Reports dashboard/index page"""
+    return render(request, 'reports/index.html')
+
+# ========== MAIN DASHBOARD ==========
 
 @staff_member_required
 def dashboard(request):
@@ -50,6 +61,8 @@ def create_default_widgets(user):
     ]
     for widget_data in widgets:
         DashboardWidget.objects.create(user=user, **widget_data)
+
+# ========== API ENDPOINTS ==========
 
 @staff_member_required
 def stats_api(request):
@@ -133,6 +146,56 @@ def top_farmers_table(request):
         })
     return JsonResponse({'data': data})
 
+# ========== DIRECT EXPORT FUNCTIONS ==========
+
+@staff_member_required
+def export_farmers(request):
+    """Export farmers data directly"""
+    file_format = request.GET.get('format', 'excel')
+    data = export_farmers_report()
+    
+    if file_format == 'csv':
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = f'attachment; filename="farmers_{timezone.now().strftime("%Y%m%d_%H%M%S")}.csv"'
+        writer = csv.writer(response)
+        writer.writerow(data['headers'])
+        for row in data['rows']:
+            writer.writerow(row)
+        return response
+    else:  # excel
+        df = pd.DataFrame(data['rows'], columns=data['headers'])
+        output = BytesIO()
+        with pd.ExcelWriter(output, engine='openpyxl') as writer:
+            df.to_excel(writer, sheet_name='Farmers', index=False)
+        response = HttpResponse(output.getvalue(), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = f'attachment; filename="farmers_{timezone.now().strftime("%Y%m%d_%H%M%S")}.xlsx"'
+        return response
+
+
+@staff_member_required
+def export_deliveries(request):
+    """Export deliveries data directly"""
+    file_format = request.GET.get('format', 'excel')
+    data = export_deliveries_report()
+    
+    if file_format == 'csv':
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = f'attachment; filename="deliveries_{timezone.now().strftime("%Y%m%d_%H%M%S")}.csv"'
+        writer = csv.writer(response)
+        writer.writerow(data['headers'])
+        for row in data['rows']:
+            writer.writerow(row)
+        return response
+    else:  # excel
+        df = pd.DataFrame(data['rows'], columns=data['headers'])
+        output = BytesIO()
+        with pd.ExcelWriter(output, engine='openpyxl') as writer:
+            df.to_excel(writer, sheet_name='Deliveries', index=False)
+        response = HttpResponse(output.getvalue(), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = f'attachment; filename="deliveries_{timezone.now().strftime("%Y%m%d_%H%M%S")}.xlsx"'
+        return response
+
+
 @staff_member_required
 def export_report(request, report_type):
     file_format = request.GET.get('format', 'csv')
@@ -196,6 +259,8 @@ def export_farmers_report():
         ])
     return {'headers': headers, 'rows': rows}
 
+# ========== HARVEST PREDICTION ==========
+
 @staff_member_required
 def harvest_prediction(request):
     historical = CoffeeBatch.objects.filter(
@@ -229,3 +294,105 @@ def harvest_prediction(request):
         'predictions': predictions,
         'seasonality': seasonality
     })
+
+# ========== COLLECTION REPORT ==========
+
+@staff_member_required
+def collection_report(request):
+    """Daily/Weekly/Monthly coffee collection report with PDF export"""
+    
+    # Get date range from request
+    period = request.GET.get('period', 'month')  # day, week, month
+    start_date_str = request.GET.get('start_date')
+    end_date_str = request.GET.get('end_date')
+    
+    # Default to current month if no dates provided
+    today = timezone.now().date()
+    
+    if period == 'day':
+        if not start_date_str:
+            start_date = today
+            end_date = today
+        else:
+            start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
+            end_date = start_date if not end_date_str else datetime.strptime(end_date_str, '%Y-%m-%d').date()
+    elif period == 'week':
+        if not start_date_str:
+            start_date = today - timedelta(days=today.weekday())
+            end_date = start_date + timedelta(days=6)
+        else:
+            start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
+            end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date() if end_date_str else start_date + timedelta(days=6)
+    else:  # month
+        if not start_date_str:
+            start_date = today.replace(day=1)
+            end_date = today
+        else:
+            start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
+            end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date() if end_date_str else start_date.replace(day=28)
+    
+    # Convert dates to datetime for filtering
+    start_datetime = datetime.combine(start_date, datetime.min.time())
+    end_datetime = datetime.combine(end_date, datetime.max.time())
+    
+    # Filter batches by date range
+    batches = CoffeeBatch.objects.filter(
+        delivery_date__gte=start_datetime,
+        delivery_date__lte=end_datetime
+    ).select_related('farmer')
+    
+    # Summary statistics
+    total_weight = batches.aggregate(Sum('cherry_weight_kg'))['cherry_weight_kg__sum'] or 0
+    total_batches = batches.count()
+    total_farmers = batches.values('farmer').distinct().count()
+    avg_weight = batches.aggregate(Avg('cherry_weight_kg'))['cherry_weight_kg__avg'] or 0
+    
+    # Grade distribution
+    grade_distribution = batches.values('quality_grade').annotate(
+        count=Count('id'),
+        total_weight=Sum('cherry_weight_kg')
+    ).order_by('quality_grade')
+    
+    # Daily breakdown - extract date from datetime for grouping
+    from django.db.models.functions import TruncDate
+    daily_breakdown = batches.annotate(
+        delivery_date_only=TruncDate('delivery_date')
+    ).values('delivery_date_only').annotate(
+        batches=Count('id'),
+        weight=Sum('cherry_weight_kg'),
+        farmers=Count('farmer', distinct=True)
+    ).order_by('delivery_date_only')
+    
+    # Prepare context
+    context = {
+        'period': period,
+        'start_date': start_date,
+        'end_date': end_date,
+        'total_weight': total_weight,
+        'total_batches': total_batches,
+        'total_farmers': total_farmers,
+        'avg_weight': avg_weight,
+        'grade_distribution': grade_distribution,
+        'daily_breakdown': daily_breakdown,
+        'batches': batches[:100],  # Limit to 100 for performance
+        'generated_at': timezone.now(),
+    }
+    
+    # Check if PDF download requested
+    if request.GET.get('download') == 'pdf':
+        return render_to_pdf(request, 'reports/collection_report_pdf.html', context)
+    
+    return render(request, 'reports/collection_report.html', context)
+
+
+def render_to_pdf(request, template_src, context_dict):
+    """Helper function to generate PDF from HTML template using xhtml2pdf"""
+    template = get_template(template_src)
+    html = template.render(context_dict)
+    result = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), result)
+    if not pdf.err:
+        response = HttpResponse(result.getvalue(), content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="collection_report.pdf"'
+        return response
+    return HttpResponse('Error generating PDF', status=400)

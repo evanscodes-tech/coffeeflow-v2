@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Coffee Collection Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            margin: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .report-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #8B5A2B;
+        }
+        .report-period {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+        .generated-date {
+            font-size: 10px;
+            color: #999;
+            margin-top: 5px;
+        }
+        .summary {
+            margin-bottom: 20px;
+            width: 100%;
+        }
+        .summary-box {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+            display: inline-block;
+            width: 23%;
+            text-align: center;
+            background-color: #f9f9f9;
+        }
+        .summary-box strong {
+            display: block;
+            font-size: 14px;
+        }
+        .summary-box .value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #8B5A2B;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 10px;
+            color: #666;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+        h3 {
+            color: #8B5A2B;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="report-title">☕ CoffeeFlow Collection Report</div>
+        <div class="report-period">
+            Period: {{ start_date|date:"F j, Y" }} - {{ end_date|date:"F j, Y" }}
+        </div>
+        <div class="generated-date">
+            Generated: {{ generated_at|date:"F j, Y H:i" }}
+        </div>
+    </div>
+
+    <div class="summary">
+        <div class="summary-box">
+            <strong>Total Coffee</strong>
+            <div class="value">{{ total_weight|floatformat:0 }} kg</div>
+        </div>
+        <div class="summary-box">
+            <strong>Total Batches</strong>
+            <div class="value">{{ total_batches }}</div>
+        </div>
+        <div class="summary-box">
+            <strong>Active Farmers</strong>
+            <div class="value">{{ total_farmers }}</div>
+        </div>
+        <div class="summary-box">
+            <strong>Avg Batch</strong>
+            <div class="value">{{ avg_weight|floatformat:1 }} kg</div>
+        </div>
+    </div>
+
+    <h3>Daily Breakdown</h3>
+    <table>
+        <thead>
+            <tr><th>Date</th><th>Batches</th><th>Weight (kg)</th><th>Farmers</th></tr>
+        </thead>
+        <tbody>
+            {% for day in daily_breakdown %}
+            <tr>
+                <td>{{ day.delivery_date_only|date:"Y-m-d" }}</td>
+                <td>{{ day.batches }}</td>
+                <td>{{ day.weight|floatformat:0 }}</td>
+                <td>{{ day.farmers }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4">No data for this period</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h3>Grade Distribution</h3>
+    <table>
+        <thead><tr><th>Grade</th><th>Batches</th><th>Weight (kg)</th></tr></thead>
+        <tbody>
+            {% for grade in grade_distribution %}
+            <tr>
+                <td>{{ grade.quality_grade|default:"Unspecified"|title }}</td>
+                <td>{{ grade.count }}</td>
+                <td>{{ grade.total_weight|floatformat:0 }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h3>Recent Batches</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Farmer</th>
+                <th>Weight (kg)</th>
+                <th>Grade</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for batch in batches %}
+            <tr>
+                <td>{{ batch.delivery_date|date:"Y-m-d" }}</td>
+                <td>{{ batch.farmer.full_name }}</td>
+                <td>{{ batch.cherry_weight_kg }}</td>
+                <td>{{ batch.get_quality_grade_display|default:"—" }}</td>
+                <td>{% if batch.payment_status == 'paid' %}Paid{% else %}Pending{% endif %}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="footer">
+        This is a system-generated report. For queries, contact the cooperative office.
+    </div>
+</body>
+</html>

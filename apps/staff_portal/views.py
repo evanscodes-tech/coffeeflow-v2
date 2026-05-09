@@ -10,12 +10,17 @@ from apps.deliveries.models import CoffeeBatch
 User = get_user_model()
 
 
+# Helper function to check if user has staff or admin access
+def has_staff_access(user):
+    return user.is_authenticated and (user.role in ['super_admin', 'staff'] or user.is_staff or user.is_superuser)
+
+
 @login_required
 def dashboard(request):
     """Staff dashboard - shows today's activities"""
     
     # Check if user has staff or super admin role
-    if request.user.role not in ['super_admin', 'staff']:
+    if not has_staff_access(request.user):
         messages.error(request, 'You do not have access to this page.')
         return redirect('home')
     
@@ -43,7 +48,7 @@ def register_farmer(request):
     """Register a new farmer (create user account + farmer profile)"""
     
     # Check permission
-    if request.user.role not in ['super_admin', 'staff']:
+    if not has_staff_access(request.user):
         messages.error(request, 'You do not have permission to register farmers.')
         return redirect('staff_portal:dashboard')
     
@@ -116,7 +121,7 @@ def register_farmer(request):
 def record_delivery(request):
     """Record a coffee delivery"""
     
-    if request.user.role not in ['super_admin', 'staff']:
+    if not has_staff_access(request.user):
         messages.error(request, 'You do not have permission to record deliveries.')
         return redirect('staff_portal:dashboard')
     
@@ -157,7 +162,7 @@ def record_delivery(request):
 def farmer_list(request):
     """List all farmers"""
     
-    if request.user.role not in ['super_admin', 'staff']:
+    if not has_staff_access(request.user):
         messages.error(request, 'You do not have permission to view farmers.')
         return redirect('staff_portal:dashboard')
     

@@ -58,6 +58,7 @@
         text-decoration: none;
         font-size: 14px;
         transition: all 0.3s ease;
+        cursor: pointer;
     }
     
     .horizontal-nav a:hover {
@@ -164,16 +165,18 @@
         }
     }
 </style>
+<!-- Add Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 {% endblock %}
 
 {% block nav-global %}
 <div class="horizontal-nav">
     <ul>
-        <li><a href="/admin/" class="{% if request.path == '/admin/' %}active{% endif %}">
+        <li><a href="/admin/">
             <i class="fas fa-tachometer-alt"></i> Dashboard
         </a></li>
         <li class="dropdown">
-            <a href="#">
+            <a href="javascript:void(0)">
                 <i class="fas fa-users"></i> Users <i class="fas fa-chevron-down"></i>
             </a>
             <div class="dropdown-content">
@@ -182,7 +185,7 @@
             </div>
         </li>
         <li class="dropdown">
-            <a href="#">
+            <a href="javascript:void(0)">
                 <i class="fas fa-tractor"></i> Farmers <i class="fas fa-chevron-down"></i>
             </a>
             <div class="dropdown-content">
@@ -191,7 +194,7 @@
             </div>
         </li>
         <li class="dropdown">
-            <a href="#">
+            <a href="javascript:void(0)">
                 <i class="fas fa-truck"></i> Deliveries <i class="fas fa-chevron-down"></i>
             </a>
             <div class="dropdown-content">
@@ -200,7 +203,7 @@
             </div>
         </li>
         <li class="dropdown">
-            <a href="#">
+            <a href="javascript:void(0)">
                 <i class="fas fa-coins"></i> Payments <i class="fas fa-chevron-down"></i>
             </a>
             <div class="dropdown-content">
@@ -208,9 +211,9 @@
                 <a href="/admin/payments/payment/add/">Process Payment</a>
             </div>
         </li>
-        <li><a href="/reports/">
-            <i class="fas fa-chart-line"></i> Reports
-        </a></li>
+        <li><a href="/reports/collection/">
+    <i class="fas fa-chart-line"></i> Reports
+</a></li>
         <li><a href="/staff/">
             <i class="fas fa-clipboard-list"></i> Staff Portal
         </a></li>
