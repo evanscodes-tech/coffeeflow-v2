@@ -16,6 +16,11 @@ class CustomUser(AbstractUser):
     phone_number = models.CharField(max_length=15, unique=True, blank=True, null=True)
     email_verified = models.BooleanField(default=False)
     
+    # OTP (One-Time Password) fields for two-factor authentication
+    otp_code = models.CharField(max_length=6, blank=True, null=True)
+    otp_created_at = models.DateTimeField(blank=True, null=True)
+    otp_verified = models.BooleanField(default=False)
+    
     # Explicitly define groups and user_permissions with unique related_name
     groups = models.ManyToManyField(
         'auth.Group',
@@ -33,7 +38,7 @@ class CustomUser(AbstractUser):
     )
     
     class Meta:
-        app_label = 'accounts'  # Add this line
+        app_label = 'accounts'
         db_table = 'accounts_customuser'
     
     def __str__(self):

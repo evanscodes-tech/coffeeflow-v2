@@ -1,0 +1,39 @@
+{% extends "base.html" %} 
+{% load static %} 
+ 
+{% block title %}Farmer Login - CoffeeFlow{% endblock %} 
+ 
+{% block content %} 
+<div style="max-width: 400px; margin: 50px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);"> 
+    <h2 style="text-align: center; color: #8B5A2B;"><i class="fas fa-tractor"></i> Farmer Login</h2> 
+    <p style="text-align: center; color: #666;">Enter your credentials to receive OTP</p> 
+ 
+    {% if messages %} 
+        {% for message in messages %} 
+            <div style="padding: 10px; margin: 10px 0; border-radius: 5px; background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;"> 
+                {{ message }} 
+            </div> 
+        {% endfor %} 
+    {% endif %} 
+ 
+    <form method="post"> 
+        {% csrf_token %} 
+        <div style="margin-bottom: 15px;"> 
+            <label style="display: block; margin-bottom: 5px; font-weight: 600;"><i class="fas fa-user"></i> Username</label> 
+            <input type="text" name="username" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;"> 
+        </div> 
+        <div style="margin-bottom: 20px;"> 
+            <label style="display: block; margin-bottom: 5px; font-weight: 600;"><i class="fas fa-lock"></i> Password</label> 
+            <input type="password" name="password" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;"> 
+        </div> 
+        <button type="submit" style="width: 100%; padding: 12px; background: #8B5A2B; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px;"> 
+            <i class="fas fa-paper-plane"></i> Send OTP 
+        </button> 
+    </form> 
+ 
+    <div style="text-align: center; margin-top: 20px;"> 
+        <p>Don't have an account? <a href="{% url 'register' %}" style="color: #8B5A2B;">Register here</a></p> 
+        <p><a href="{% url 'login' %}" style="color: #666;">Staff/Admin Login</a></p> 
+    </div> 
+</div> 
+{% endblock %} 

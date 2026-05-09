@@ -16,4 +16,9 @@ urlpatterns = [
     path('profile/', views.profile, name='profile'),
     path('profile/edit/', views.profile_edit, name='profile_edit'),
     path('register/', views.register, name='register'),
+     path('farmer-login/', views.farmer_login, name='farmer_login'),
+     path('verify-otp/', views.verify_otp, name='verify_otp'),
+     path('farmer-logout/', views.farmer_logout, name='farmer_logout'),
+
+
 ]

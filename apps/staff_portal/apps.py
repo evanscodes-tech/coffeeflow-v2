@@ -1,0 +1,5 @@
+from django.apps import AppConfig
+
+class StaffPortalConfig(AppConfig):
+    default_auto_field = 'django.db.models.BigAutoField'
+    name = 'apps.staff_portal'  # ← Change from 'staff_portal' to 'apps.staff_portal'

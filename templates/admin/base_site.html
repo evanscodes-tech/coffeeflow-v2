@@ -1,0 +1,219 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title|default:_('CoffeeFlow Admin') }}{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+    /* Horizontal Navigation Styles */
+    #header {
+        background: linear-gradient(135deg, #8B5A2B, #5D3A1A);
+        padding: 0;
+        height: auto;
+    }
+    
+    #branding {
+        float: none;
+        text-align: center;
+        padding: 15px 20px;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    #branding h1 {
+        color: white;
+        font-size: 1.8rem;
+        margin: 0;
+    }
+    
+    #branding h1 a {
+        color: white;
+        text-decoration: none;
+    }
+    
+    /* Horizontal Menu */
+    .horizontal-nav {
+        background: #2C1810;
+        padding: 0 20px;
+        overflow: hidden;
+    }
+    
+    .horizontal-nav ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        display: flex;
+        flex-wrap: wrap;
+    }
+    
+    .horizontal-nav li {
+        display: inline-block;
+        position: relative;
+    }
+    
+    .horizontal-nav a {
+        display: block;
+        padding: 15px 20px;
+        color: #FDF8F2;
+        text-decoration: none;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+    
+    .horizontal-nav a:hover {
+        background: #8B5A2B;
+        color: white;
+    }
+    
+    .horizontal-nav .active {
+        background: #8B5A2B;
+        color: white;
+    }
+    
+    /* Dropdown menu for nested items */
+    .horizontal-nav .dropdown {
+        position: relative;
+    }
+    
+    .horizontal-nav .dropdown-content {
+        display: none;
+        position: absolute;
+        background: #2C1810;
+        min-width: 200px;
+        box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        z-index: 1000;
+        border-radius: 4px;
+    }
+    
+    .horizontal-nav .dropdown:hover .dropdown-content {
+        display: block;
+    }
+    
+    .horizontal-nav .dropdown-content a {
+        padding: 12px 20px;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .horizontal-nav .dropdown-content a:hover {
+        background: #8B5A2B;
+    }
+    
+    /* Content area */
+    #content {
+        margin: 20px;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        padding: 20px;
+    }
+    
+    /* Dashboard modules */
+    .module h2 {
+        background: #8B5A2B;
+        color: white;
+        border-radius: 4px;
+        padding: 10px 15px;
+    }
+    
+    .dashboard .module table th {
+        background: #f5f5f5;
+        color: #2C1810;
+    }
+    
+    /* Buttons */
+    .button, input[type=submit], input[type=button] {
+        background: #8B5A2B;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        padding: 8px 16px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .button:hover, input[type=submit]:hover {
+        background: #5D3A1A;
+        transform: translateY(-2px);
+    }
+    
+    /* User tools */
+    #user-tools {
+        float: right;
+        padding: 15px 20px;
+        color: #FDF8F2;
+    }
+    
+    #user-tools a {
+        color: #FDF8F2;
+        text-decoration: none;
+        margin-left: 15px;
+    }
+    
+    #user-tools a:hover {
+        text-decoration: underline;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .horizontal-nav ul {
+            flex-direction: column;
+        }
+        
+        .horizontal-nav .dropdown-content {
+            position: static;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block nav-global %}
+<div class="horizontal-nav">
+    <ul>
+        <li><a href="/admin/" class="{% if request.path == '/admin/' %}active{% endif %}">
+            <i class="fas fa-tachometer-alt"></i> Dashboard
+        </a></li>
+        <li class="dropdown">
+            <a href="#">
+                <i class="fas fa-users"></i> Users <i class="fas fa-chevron-down"></i>
+            </a>
+            <div class="dropdown-content">
+                <a href="/admin/accounts/customuser/">All Users</a>
+                <a href="/admin/accounts/customuser/add/">Add User</a>
+            </div>
+        </li>
+        <li class="dropdown">
+            <a href="#">
+                <i class="fas fa-tractor"></i> Farmers <i class="fas fa-chevron-down"></i>
+            </a>
+            <div class="dropdown-content">
+                <a href="/admin/farmers/farmerprofile/">All Farmers</a>
+                <a href="/admin/farmers/farmerprofile/add/">Add Farmer</a>
+            </div>
+        </li>
+        <li class="dropdown">
+            <a href="#">
+                <i class="fas fa-truck"></i> Deliveries <i class="fas fa-chevron-down"></i>
+            </a>
+            <div class="dropdown-content">
+                <a href="/admin/deliveries/coffeebatch/">All Deliveries</a>
+                <a href="/admin/deliveries/coffeebatch/add/">Record Delivery</a>
+            </div>
+        </li>
+        <li class="dropdown">
+            <a href="#">
+                <i class="fas fa-coins"></i> Payments <i class="fas fa-chevron-down"></i>
+            </a>
+            <div class="dropdown-content">
+                <a href="/admin/payments/payment/">All Payments</a>
+                <a href="/admin/payments/payment/add/">Process Payment</a>
+            </div>
+        </li>
+        <li><a href="/reports/">
+            <i class="fas fa-chart-line"></i> Reports
+        </a></li>
+        <li><a href="/staff/">
+            <i class="fas fa-clipboard-list"></i> Staff Portal
+        </a></li>
+    </ul>
+</div>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends "base.html" %} 
+{% load static %} 
+ 
+{% block title %}Verify OTP - CoffeeFlow{% endblock %} 
+ 
+{% block content %} 
+<div style="max-width: 400px; margin: 50px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);"> 
+    <h2 style="text-align: center; color: #8B5A2B;"><i class="fas fa-key"></i> Verify OTP</h2> 
+    <p style="text-align: center; color: #666;">We sent a 6-digit code to <strong>{{ phone }}</strong></p> 
+ 
+    {% if messages %} 
+        {% for message in messages %} 
+            <div style="padding: 10px; margin: 10px 0; border-radius: 5px; background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;"> 
+                {{ message }} 
+            </div> 
+        {% endfor %} 
+    {% endif %} 
+ 
+    <form method="post"> 
+        {% csrf_token %} 
+        <div style="margin-bottom: 20px;"> 
+            <label style="display: block; margin-bottom: 5px; font-weight: 600;"><i class="fas fa-qrcode"></i> Enter OTP Code</label> 
+            <input type="text" name="otp_code" maxlength="6" required placeholder="000000" style="width: 100%; padding: 15px; font-size: 24px; text-align: center; letter-spacing: 5px; border: 1px solid #ddd; border-radius: 4px;"> 
+        </div> 
+        <button type="submit" style="width: 100%; padding: 12px; background: #8B5A2B; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px;"> 
+        </button> 
+    </form> 
+ 
+    <div style="text-align: center; margin-top: 20px;"> 
+        <p class="text-muted">Didn't receive the code? <a href="{% url 'farmer_login' %}" style="color: #8B5A2B;">Try again</a></p> 
+    </div> 
+</div> 
+ 
+<script> 
+    // Auto-submit when 6 digits are entered 
+    document.querySelector('input[name="otp_code"]').addEventListener('input', function(e) { 
+        if (this.value.length === 6) { 
+            this.form.submit(); 
+        } 
+    }); 
+</script> 
+{% endblock %} 

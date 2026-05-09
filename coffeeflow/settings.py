@@ -11,7 +11,7 @@ import sys
 
 SECRET_KEY =  config('SECRET_KEY', default='django-insecure-default-key')
 DEBUG = config('DEBUG', default=True, cast=bool)
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='').split(',')
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '192.168.1.141', '192.168.1.142']
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'apps.payments',
     'apps.mobile_api',
     'apps.reports',
+     'apps.staff_portal',
 ]
 
 MIDDLEWARE = [
