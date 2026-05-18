@@ -11,7 +11,7 @@ import sys
 
 SECRET_KEY =  config('SECRET_KEY', default='django-insecure-default-key')
 DEBUG = config('DEBUG', default=True, cast=bool)
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '192.168.1.141', '192.168.1.142']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '192.168.1.113', '10.0.2.2']
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
