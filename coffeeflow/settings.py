@@ -140,4 +140,8 @@ ADMIN_INTERFACE_SETTINGS = {
     'list_filter_removal_links': True,
     'show_recent_actions': True,
 }
+
+# Africa's Talking SMS Configuration
+AFRICASTALKING_USERNAME = 'sandbox'  # For testing
+AFRICASTALKING_API_KEY = 'atsk_4fd1caa981972578f01a721773fda048ac9c433b9e1014948f132abfc2f34177a53d4983'  # Paste your API key from AT dashboard
 # ===================================================

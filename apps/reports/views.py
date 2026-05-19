@@ -296,7 +296,6 @@ def harvest_prediction(request):
     })
 
 # ========== COLLECTION REPORT ==========
-
 @staff_member_required
 def collection_report(request):
     """Daily/Weekly/Monthly coffee collection report with PDF export"""
@@ -331,14 +330,10 @@ def collection_report(request):
             start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
             end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date() if end_date_str else start_date.replace(day=28)
     
-    # Convert dates to datetime for filtering
-    start_datetime = datetime.combine(start_date, datetime.min.time())
-    end_datetime = datetime.combine(end_date, datetime.max.time())
-    
-    # Filter batches by date range
+    # Filter batches by date range (delivery_date is a DateField)
     batches = CoffeeBatch.objects.filter(
-        delivery_date__gte=start_datetime,
-        delivery_date__lte=end_datetime
+        delivery_date__gte=start_date,
+        delivery_date__lte=end_date
     ).select_related('farmer')
     
     # Summary statistics
@@ -353,15 +348,26 @@ def collection_report(request):
         total_weight=Sum('cherry_weight_kg')
     ).order_by('quality_grade')
     
-    # Daily breakdown - extract date from datetime for grouping
-    from django.db.models.functions import TruncDate
-    daily_breakdown = batches.annotate(
-        delivery_date_only=TruncDate('delivery_date')
-    ).values('delivery_date_only').annotate(
-        batches=Count('id'),
-        weight=Sum('cherry_weight_kg'),
-        farmers=Count('farmer', distinct=True)
-    ).order_by('delivery_date_only')
+    # Daily breakdown - using Python to group by date
+    daily_dict = {}
+    for batch in batches:
+        # delivery_date is already a date object
+        date_key = batch.delivery_date
+        if date_key not in daily_dict:
+            daily_dict[date_key] = {'batches': 0, 'weight': 0, 'farmers': set()}
+        daily_dict[date_key]['batches'] += 1
+        daily_dict[date_key]['weight'] += float(batch.cherry_weight_kg)
+        daily_dict[date_key]['farmers'].add(batch.farmer.id)
+    
+    # Convert to list of dictionaries
+    daily_breakdown = []
+    for date, data in sorted(daily_dict.items()):
+        daily_breakdown.append({
+            'delivery_date_only': date,
+            'batches': data['batches'],
+            'weight': data['weight'],
+            'farmers': len(data['farmers'])
+        })
     
     # Prepare context
     context = {
@@ -374,7 +380,7 @@ def collection_report(request):
         'avg_weight': avg_weight,
         'grade_distribution': grade_distribution,
         'daily_breakdown': daily_breakdown,
-        'batches': batches[:100],  # Limit to 100 for performance
+        'batches': batches[:100],
         'generated_at': timezone.now(),
     }
     

@@ -1,3 +1,4 @@
+from .sms_utils import sms_service
 from django.http import JsonResponse 
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated 
@@ -64,47 +65,46 @@ class TokenAuthentication(BaseAuthentication):
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def request_otp(request):
-    """Request OTP for farmer login"""
     phone_number = request.data.get('phone_number')
     
     if not phone_number:
-        return Response({
-            "error": "Phone number is required"
-        }, status=400)
+        return Response({"error": "Phone number required"}, status=400)
     
-    # Check if farmer exists with this phone number
     try:
         farmer = FarmerProfile.objects.get(phone_number=phone_number)
     except FarmerProfile.DoesNotExist:
-        return Response({
-            "error": "No farmer found with this phone number. Please contact your cooperative."
-        }, status=404)
+        return Response({"error": "No farmer found with this phone number"}, status=404)
     
     # Generate 6-digit OTP
     otp_code = ''.join(random.choices(string.digits, k=6))
     
-    # Store OTP with expiry (10 minutes)
+    # Store OTP
     OTP_STORE[phone_number] = {
         'otp': otp_code,
         'expires_at': timezone.now() + timedelta(minutes=10),
         'farmer_id': farmer.id
     }
     
-    # In development, print the OTP to console
     print(f"========================================")
-    print(f"📱 OTP for farmer {farmer.full_name()}")
+    print(f"📱 OTP for {farmer.full_name()}")
     print(f"📞 Phone: {phone_number}")
     print(f"🔐 OTP Code: {otp_code}")
-    print(f"⏰ Expires in: 10 minutes")
     print(f"========================================")
+    
+    # Send SMS
+    sms_sent, sms_message = sms_service.send_otp(phone_number, otp_code)
+    
+    if sms_sent:
+        print(f"✅ {sms_message}")
+    else:
+        print(f"⚠️ SMS failed: {sms_message}")
     
     return Response({
         "success": True,
         "message": "OTP sent successfully",
-        "debug_otp": otp_code,  # Remove this in production
+        "debug_otp": otp_code,  # Remove in production
         "expires_in": 600
     }, status=200)
-
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
