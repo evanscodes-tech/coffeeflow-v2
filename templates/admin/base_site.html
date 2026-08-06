@@ -1,222 +1,362 @@
 {% extends "admin/base.html" %}
 {% load static %}
 
-{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title|default:_('CoffeeFlow Admin') }}{% endblock %}
+{% block title %}
+{% if subtitle %}{{ subtitle }} | {% endif %}
+{{ title }} | CoffeeFlow Admin
+{% endblock %}
 
 {% block extrastyle %}
 {{ block.super }}
+
 <style>
-    /* Horizontal Navigation Styles */
-    #header {
-        background: linear-gradient(135deg, #8B5A2B, #5D3A1A);
-        padding: 0;
-        height: auto;
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:Tahoma, Arial, sans-serif;
+    background:#f4f2ed;
+    color:#2c2c2c;
+}
+
+/* ===== HEADER ===== */
+#header{
+    height:60px;
+    background:linear-gradient(to bottom, #1a2a3a, #0d1b2a);
+    color:#fff;
+    border-bottom:3px solid #8b6b4d;
+}
+
+#branding{
+    float:left;
+    padding:16px 25px;
+}
+
+#branding h1{
+    margin:0;
+    font-size:22px;
+    font-weight:600;
+    letter-spacing:0.5px;
+}
+
+#branding h1 a{
+    color:#f5f0e8;
+    text-decoration:none;
+}
+
+#user-tools{
+    float:right;
+    padding:20px 25px;
+    color:#d4cdc0;
+}
+
+#user-tools a{
+    color:#d4cdc0;
+    text-decoration:none;
+}
+
+#user-tools a:hover{
+    text-decoration:underline;
+    color:#e8d5b5;
+}
+
+/* ===== NAVIGATION ===== */
+.horizontal-nav{
+    background:#2c3e4f;
+    border-bottom:2px solid #8b6b4d;
+}
+
+.horizontal-nav ul{
+    display:flex;
+    list-style:none;
+    margin:0;
+    padding:0;
+}
+
+.horizontal-nav li{
+    position:relative;
+}
+
+.horizontal-nav a{
+    display:block;
+    padding:12px 22px;
+    color:#e8e0d5;
+    text-decoration:none;
+    font-size:14px;
+    transition: all 0.2s;
+}
+
+.horizontal-nav a:hover{
+    background:#3d5a6d;
+    color:#fff;
+}
+
+.horizontal-nav .active{
+    background:#1e2e3e;
+    color:#e8d5b5;
+    font-weight:bold;
+    border-bottom:3px solid #8b6b4d;
+}
+
+/* ===== CONTENT ===== */
+#content{
+    margin:20px;
+    background:white;
+    border:1px solid #d6cec0;
+    border-radius:8px;
+    padding:25px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.05);
+}
+
+/* ===== MODULES / CARDS ===== */
+.module{
+    border:1px solid #d6cec0;
+    border-radius:6px;
+    margin-bottom:20px;
+    background:white;
+}
+
+.module h2{
+    background:#f0ebe3;
+    color:#1a2a3a;
+    padding:12px 18px;
+    border-bottom:1px solid #d6cec0;
+    font-size:16px;
+    font-weight:600;
+}
+
+/* ===== TABLES ===== */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #ffffff;
+}
+
+th {
+    background: #e8e0d5;
+    color: #1a2a3a;
+    font-weight: 600;
+    padding: 10px 14px;
+    border: 1px solid #d6cec0;
+    text-align: left;
+}
+
+td {
+    padding: 10px 14px;
+    border: 1px solid #d6cec0;
+    background: #ffffff;
+    color: #1a1a1a;
+}
+
+tr:nth-child(even) td {
+    background: #f8f5f0;
+}
+
+tr:hover td {
+    background: #f0ebe3;
+}
+
+/* ===== BUTTONS ===== */
+.button,
+input[type=submit],
+input[type=button]{
+    background:#2c5f3e;
+    color:white;
+    border:none;
+    padding:8px 18px;
+    cursor:pointer;
+    border-radius:4px;
+    transition: background 0.2s;
+}
+
+.button:hover,
+input[type=submit]:hover{
+    background:#1e452b;
+}
+
+.button.default{
+    background:#8b6b4d;
+}
+
+.button.default:hover{
+    background:#6e5239;
+}
+
+/* ===== LINKS ===== */
+a{
+    color:#2c5f3e;
+}
+
+a:hover{
+    color:#1e452b;
+}
+
+/* ===== MESSAGES ===== */
+.success{
+    background:#e4f0e0;
+    border:1px solid #8b9f7a;
+    padding:12px;
+    border-radius:4px;
+    color:#1a3a1a;
+}
+
+.error{
+    background:#f5e6e4;
+    border:1px solid #d4a8a0;
+    padding:12px;
+    border-radius:4px;
+    color:#6b2a22;
+}
+
+.warning{
+    background:#faf0e0;
+    border:1px solid #d4ba8a;
+    padding:12px;
+    border-radius:4px;
+    color:#6b4a22;
+}
+
+/* ===== FIX DROPDOWN AND INPUT CLIPPING ===== */
+.aligned select {
+    height: auto !important;
+    min-height: 38px !important;
+    padding: 6px 12px !important;
+    line-height: 1.5 !important;
+    appearance: auto !important;
+    -webkit-appearance: auto !important;
+}
+
+.aligned input,
+.aligned textarea {
+    height: auto !important;
+    min-height: 38px !important;
+    padding: 6px 12px !important;
+    line-height: 1.5 !important;
+}
+
+.aligned .form-row {
+    padding: 8px 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    flex-wrap: wrap !important;
+}
+
+.aligned label {
+    display: inline-block !important;
+    vertical-align: middle !important;
+    min-width: 140px !important;
+    padding: 6px 0 !important;
+}
+
+.aligned .field-box {
+    display: inline-block !important;
+    vertical-align: middle !important;
+    padding: 6px 0 !important;
+}
+
+.aligned .form-row > div {
+    display: inline-block !important;
+    vertical-align: middle !important;
+}
+
+.aligned .readonly {
+    display: inline-block !important;
+    vertical-align: middle !important;
+    padding: 6px 12px !important;
+    background: #f8f5f0 !important;
+    border-radius: 4px !important;
+    min-height: 38px !important;
+}
+
+.related-widget-wrapper {
+    display: inline-flex !important;
+    align-items: center !important;
+    flex-wrap: wrap !important;
+    gap: 5px !important;
+}
+
+.related-widget-wrapper .selector {
+    display: inline-block !important;
+}
+
+.object-tools {
+    margin-bottom: 10px !important;
+}
+
+/* ===== MOBILE ===== */
+@media(max-width:768px){
+    .horizontal-nav ul{
+        flex-direction:column;
     }
-    
-    #branding {
-        float: none;
-        text-align: center;
-        padding: 15px 20px;
-        border-bottom: 1px solid rgba(255,255,255,0.1);
+    #branding,#user-tools{
+        float:none;
+        text-align:center;
     }
-    
-    #branding h1 {
-        color: white;
-        font-size: 1.8rem;
-        margin: 0;
-    }
-    
-    #branding h1 a {
-        color: white;
-        text-decoration: none;
-    }
-    
-    /* Horizontal Menu */
-    .horizontal-nav {
-        background: #2C1810;
-        padding: 0 20px;
-        overflow: hidden;
-    }
-    
-    .horizontal-nav ul {
-        margin: 0;
-        padding: 0;
-        list-style: none;
-        display: flex;
-        flex-wrap: wrap;
-    }
-    
-    .horizontal-nav li {
-        display: inline-block;
-        position: relative;
-    }
-    
-    .horizontal-nav a {
-        display: block;
-        padding: 15px 20px;
-        color: #FDF8F2;
-        text-decoration: none;
-        font-size: 14px;
-        transition: all 0.3s ease;
-        cursor: pointer;
-    }
-    
-    .horizontal-nav a:hover {
-        background: #8B5A2B;
-        color: white;
-    }
-    
-    .horizontal-nav .active {
-        background: #8B5A2B;
-        color: white;
-    }
-    
-    /* Dropdown menu for nested items */
-    .horizontal-nav .dropdown {
-        position: relative;
-    }
-    
-    .horizontal-nav .dropdown-content {
-        display: none;
-        position: absolute;
-        background: #2C1810;
-        min-width: 200px;
-        box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-        z-index: 1000;
-        border-radius: 4px;
-    }
-    
-    .horizontal-nav .dropdown:hover .dropdown-content {
-        display: block;
-    }
-    
-    .horizontal-nav .dropdown-content a {
-        padding: 12px 20px;
-        border-bottom: 1px solid rgba(255,255,255,0.1);
-    }
-    
-    .horizontal-nav .dropdown-content a:hover {
-        background: #8B5A2B;
-    }
-    
-    /* Content area */
-    #content {
-        margin: 20px;
-        background: white;
-        border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        padding: 20px;
-    }
-    
-    /* Dashboard modules */
-    .module h2 {
-        background: #8B5A2B;
-        color: white;
-        border-radius: 4px;
-        padding: 10px 15px;
-    }
-    
-    .dashboard .module table th {
-        background: #f5f5f5;
-        color: #2C1810;
-    }
-    
-    /* Buttons */
-    .button, input[type=submit], input[type=button] {
-        background: #8B5A2B;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        padding: 8px 16px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-    
-    .button:hover, input[type=submit]:hover {
-        background: #5D3A1A;
-        transform: translateY(-2px);
-    }
-    
-    /* User tools */
-    #user-tools {
-        float: right;
-        padding: 15px 20px;
-        color: #FDF8F2;
-    }
-    
-    #user-tools a {
-        color: #FDF8F2;
-        text-decoration: none;
-        margin-left: 15px;
-    }
-    
-    #user-tools a:hover {
-        text-decoration: underline;
-    }
-    
-    /* Responsive */
-    @media (max-width: 768px) {
-        .horizontal-nav ul {
-            flex-direction: column;
-        }
-        
-        .horizontal-nav .dropdown-content {
-            position: static;
-        }
-    }
+}
+
 </style>
-<!-- Add Font Awesome for icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
 {% endblock %}
 
 {% block nav-global %}
+
 <div class="horizontal-nav">
-    <ul>
-        <li><a href="/admin/">
-            <i class="fas fa-tachometer-alt"></i> Dashboard
-        </a></li>
-        <li class="dropdown">
-            <a href="javascript:void(0)">
-                <i class="fas fa-users"></i> Users <i class="fas fa-chevron-down"></i>
-            </a>
-            <div class="dropdown-content">
-                <a href="/admin/accounts/customuser/">All Users</a>
-                <a href="/admin/accounts/customuser/add/">Add User</a>
-            </div>
-        </li>
-        <li class="dropdown">
-            <a href="javascript:void(0)">
-                <i class="fas fa-tractor"></i> Farmers <i class="fas fa-chevron-down"></i>
-            </a>
-            <div class="dropdown-content">
-                <a href="/admin/farmers/farmerprofile/">All Farmers</a>
-                <a href="/admin/farmers/farmerprofile/add/">Add Farmer</a>
-            </div>
-        </li>
-        <li class="dropdown">
-            <a href="javascript:void(0)">
-                <i class="fas fa-truck"></i> Deliveries <i class="fas fa-chevron-down"></i>
-            </a>
-            <div class="dropdown-content">
-                <a href="/admin/deliveries/coffeebatch/">All Deliveries</a>
-                <a href="/admin/deliveries/coffeebatch/add/">Record Delivery</a>
-            </div>
-        </li>
-        <li class="dropdown">
-            <a href="javascript:void(0)">
-                <i class="fas fa-coins"></i> Payments <i class="fas fa-chevron-down"></i>
-            </a>
-            <div class="dropdown-content">
-                <a href="/admin/payments/payment/">All Payments</a>
-                <a href="/admin/payments/payment/add/">Process Payment</a>
-            </div>
-        </li>
-        <li><a href="/reports/collection/">
-    <i class="fas fa-chart-line"></i> Reports
-</a></li>
-        <li><a href="/staff/">
-            <i class="fas fa-clipboard-list"></i> Staff Portal
-        </a></li>
-    </ul>
+<ul>
+
+<li>
+    <a href="{% url 'admin:index' %}"
+       class="{% if request.path == '/admin/' %}active{% endif %}">
+       🏠 Dashboard
+    </a>
+</li>
+
+<li>
+    <a href="/admin/accounts/customuser/">👥 Users</a>
+</li>
+
+<li>
+    <a href="/admin/farmers/farmerprofile/">🌱 Farmers</a>
+</li>
+
+<li>
+    <a href="/admin/deliveries/coffeebatch/">🚚 Deliveries</a>
+</li>
+
+<li>
+    <a href="/admin/payments/farmerpayment/">💰 Payments</a>
+</li>
+
+<li>
+    <a href="{% url 'reports:collection_report' %}">📈 Reports</a>
+</li>
+
+<li>
+    <a href="{% url 'staff_portal:dashboard' %}">🖥 Staff Portal</a>
+</li>
+
+<li>
+    <a href="/admin/logout/">🚪 Logout</a>
+</li>
+
+<li style="flex:1; text-align:right; padding:4px 0;">
+    <form method="GET" action="{% url 'farmers:search_farmer' %}" style="display:inline-flex; gap:6px; align-items:center;">
+        <input
+            type="text"
+            name="q"
+            placeholder="🔍 Search farmer..."
+            style="padding:6px 12px; border:1px solid #8b6b4d; border-radius:4px; background:#f4f2ed; color:#1a2a3a; width:200px; font-size:13px;"
+        >
+        <button type="submit" style="background:#2c5f3e; color:white; border:none; padding:6px 14px; border-radius:4px; cursor:pointer; font-size:13px;">
+            Go
+        </button>
+    </form>
+</li>
+
+</ul>
 </div>
+
 {% endblock %}

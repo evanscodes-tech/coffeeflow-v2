@@ -1,0 +1,46 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block content %}
+
+<div style="padding:20px; max-width:600px; margin:0 auto;">
+
+    <h2>💰 Pay Farmer</h2>
+    <p style="color:#666;">Pay <strong>{{ farmer.full_name }}</strong> ({{ farmer.farmer_id }})</p>
+
+    <form method="POST" style="background:white; border:1px solid #ddd; padding:20px; border-radius:6px;">
+        {% csrf_token %}
+
+        <div style="margin-bottom:15px;">
+            <label style="display:block; font-weight:600; margin-bottom:5px;">Amount (KES)</label>
+            <input type="number" name="amount" step="0.01" min="1" placeholder="Enter amount" required style="width:100%; padding:10px; border:1px solid #ddd; border-radius:4px;">
+        </div>
+
+        <div style="margin-bottom:15px;">
+            <label style="display:block; font-weight:600; margin-bottom:5px;">Phone Number (M-Pesa)</label>
+            <input type="tel" name="phone_number" value="{{ default_phone }}" placeholder="0712345678" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:4px;">
+            <small style="color:#999;">Leave blank to use farmer's registered phone number</small>
+        </div>
+
+        <div style="margin-bottom:20px;">
+            <label style="display:block; font-weight:600; margin-bottom:5px;">Payment Method</label>
+            <select name="payment_method" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:4px;">
+                <option value="mpesa">💰 M-Pesa</option>
+                <option value="cash">💵 Cash</option>
+                <option value="bank">🏦 Bank Transfer</option>
+            </select>
+        </div>
+
+        <div style="display:flex; gap:10px;">
+            <button type="submit" style="background:#28a745; color:white; padding:10px 20px; border:none; border-radius:4px; cursor:pointer;">
+                ✅ Pay Now
+            </button>
+            <a href="{% url 'farmers:farmer_detail' farmer.farmer_id %}" style="background:#6c757d; color:white; padding:10px 20px; text-decoration:none; border-radius:4px;">
+                ↩️ Cancel
+            </a>
+        </div>
+    </form>
+
+</div>
+
+{% endblock %}

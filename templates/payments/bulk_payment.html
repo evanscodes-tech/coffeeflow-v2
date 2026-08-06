@@ -1,0 +1,88 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block content %}
+
+<div style="padding:20px; max-width:1200px; margin:0 auto;">
+
+    <h2>💰 Bulk Payment</h2>
+    <p style="color:#666;">Select farmers and pay them all at once.</p>
+
+    <form method="POST" style="background:white; border:1px solid #ddd; padding:20px; border-radius:6px; margin-top:20px;">
+        {% csrf_token %}
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:20px;">
+            <div>
+                <label style="display:block; font-weight:600; margin-bottom:5px;">Amount (KES)</label>
+                <input type="number" name="amount" step="0.01" min="1" placeholder="Enter amount" required style="width:100%; padding:10px; border:1px solid #ddd; border-radius:4px;">
+            </div>
+            <div>
+                <label style="display:block; font-weight:600; margin-bottom:5px;">Payment Method</label>
+                <select name="payment_method" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:4px;">
+                    <option value="mpesa">💰 M-Pesa</option>
+                    <option value="cash">💵 Cash</option>
+                    <option value="bank">🏦 Bank Transfer</option>
+                </select>
+            </div>
+        </div>
+
+        <div style="margin-bottom:20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <strong>Select Farmers ({{ total_farmers }} active)</strong>
+                <button type="button" onclick="toggleAll()" style="background:#0066cc; color:white; border:none; padding:5px 15px; border-radius:4px; cursor:pointer;">Select All</button>
+            </div>
+            <div style="max-height:400px; overflow-y:auto; border:1px solid #ddd; border-radius:4px;">
+                <table style="width:100%; border-collapse:collapse;">
+                    <thead>
+                        <tr style="background:#f8f9fa;">
+                            <th style="padding:10px; text-align:center; width:50px;">
+                                <input type="checkbox" id="select-all" onchange="toggleAll()">
+                            </th>
+                            <th style="padding:10px; text-align:left;">Farmer ID</th>
+                            <th style="padding:10px; text-align:left;">Name</th>
+                            <th style="padding:10px; text-align:left;">Phone</th>
+                            <th style="padding:10px; text-align:left;">Farm</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for farmer in farmers %}
+                        <tr style="border-bottom:1px solid #eee;">
+                            <td style="padding:10px; text-align:center;">
+                                <input type="checkbox" name="farmer_ids" value="{{ farmer.id }}" class="farmer-check">
+                            </td>
+                            <td style="padding:10px;"><strong>{{ farmer.farmer_id }}</strong></td>
+                            <td style="padding:10px;">{{ farmer.full_name }}</td>
+                            <td style="padding:10px;">{{ farmer.phone_number }}</td>
+                            <td style="padding:10px;">{{ farmer.farm_name }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" style="padding:20px; text-align:center; color:#999;">No active farmers found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div style="display:flex; gap:10px;">
+            <button type="submit" style="background:#28a745; color:white; padding:12px 24px; border:none; border-radius:4px; cursor:pointer; font-size:16px;">
+                ✅ Pay Selected Farmers
+            </button>
+            <a href="{% url 'admin:index' %}" style="background:#6c757d; color:white; padding:12px 24px; text-decoration:none; border-radius:4px;">
+                ↩️ Cancel
+            </a>
+        </div>
+    </form>
+
+</div>
+
+<script>
+    function toggleAll() {
+        const checkboxes = document.querySelectorAll('.farmer-check');
+        const selectAll = document.getElementById('select-all');
+        checkboxes.forEach(cb => cb.checked = selectAll.checked);
+    }
+</script>
+
+{% endblock %}

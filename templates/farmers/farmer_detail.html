@@ -1,0 +1,93 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block content %}
+
+<div style="padding:20px; max-width:1200px; margin:0 auto;">
+
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <h2>👤 Farmer Profile</h2>
+        <div>
+            <a href="{% url 'farmers:farmer_statement_pdf' farmer.farmer_id %}" class="button" style="background:#dc3545; color:white; padding:8px 16px; text-decoration:none; border-radius:4px;">📄 Print Statement</a>
+            <a href="{% url 'payments:pay_farmer' farmer.farmer_id %}" class="button" style="background:#28a745; color:white; padding:8px 16px; text-decoration:none; border-radius:4px;">💰 Pay Farmer</a>
+            <a href="{% url 'admin:farmers_farmerprofile_change' farmer.id %}" class="button" style="background:#0066cc; color:white; padding:8px 16px; text-decoration:none; border-radius:4px;">✏️ Edit Farmer</a>
+        </div>
+    </div>
+
+    <!-- Farmer Info -->
+    <div style="background:white; border:1px solid #ddd; padding:20px; border-radius:6px; margin-bottom:20px;">
+        <table style="width:100%; border-collapse:collapse;">
+            <tr><td><strong>Farmer ID</strong></td><td>{{ farmer.farmer_id }}</td></tr>
+            <tr><td><strong>Name</strong></td><td>{{ farmer.full_name }}</td></tr>
+            <tr><td><strong>Phone</strong></td><td>{{ farmer.phone_number }}</td></tr>
+            <tr><td><strong>National ID</strong></td><td>{{ farmer.national_id }}</td></tr>
+            <tr><td><strong>Farm Name</strong></td><td>{{ farmer.farm_name }}</td></tr>
+            <tr><td><strong>Location</strong></td><td>{{ farmer.village }}, {{ farmer.district }}, {{ farmer.get_region_display }}</td></tr>
+            <tr><td><strong>Registered</strong></td><td>{{ farmer.registration_date|date:"d M Y" }}</td></tr>
+            <tr><td><strong>Farm Size</strong></td><td>{{ farmer.farm_size_acres }} acres</td></tr>
+            <tr><td><strong>Coffee Varieties</strong></td><td>{{ farmer.coffee_varieties }}</td></tr>
+            <tr><td><strong>Years Farming</strong></td><td>{{ farmer.years_farming }} years</td></tr>
+        </table>
+    </div>
+
+    <!-- Payment Summary -->
+    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px; margin-bottom:20px;">
+        <div style="background:#d4edda; border:1px solid #c3e6cb; padding:15px; border-radius:6px; text-align:center;">
+            <h3 style="margin:0;">KES {{ total_paid|floatformat:0 }}</h3>
+            <p style="margin:0; color:#155724;">Total Paid</p>
+        </div>
+        <div style="background:#fff3cd; border:1px solid #ffeeba; padding:15px; border-radius:6px; text-align:center;">
+            <h3 style="margin:0;">KES {{ total_pending|floatformat:0 }}</h3>
+            <p style="margin:0; color:#856404;">Pending Payment</p>
+        </div>
+        <div style="background:#cce5ff; border:1px solid #b8daff; padding:15px; border-radius:6px; text-align:center;">
+            <h3 style="margin:0;">{{ total_deliveries }}</h3>
+            <p style="margin:0; color:#004085;">Total Deliveries</p>
+        </div>
+    </div>
+
+    <!-- Deliveries Table -->
+    <div style="background:white; border:1px solid #ddd; border-radius:6px; overflow:hidden;">
+        <div style="padding:12px 20px; background:#f8f9fa; border-bottom:1px solid #ddd;">
+            <strong>📦 All Deliveries</strong>
+        </div>
+        <table style="width:100%; border-collapse:collapse;">
+            <thead>
+                <tr style="background:#f8f9fa;">
+                    <th style="padding:10px; text-align:left;">Date</th>
+                    <th style="padding:10px; text-align:right;">Cherry (kg)</th>
+                    <th style="padding:10px; text-align:right;">Dry (kg)</th>
+                    <th style="padding:10px; text-align:left;">Grade</th>
+                    <th style="padding:10px; text-align:right;">Price/kg</th>
+                    <th style="padding:10px; text-align:right;">Amount</th>
+                    <th style="padding:10px; text-align:center;">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for delivery in deliveries %}
+                <tr style="border-bottom:1px solid #eee;">
+                    <td style="padding:8px 10px;">{{ delivery.delivery_date|date:"d M Y" }}</td>
+                    <td style="padding:8px 10px; text-align:right;">{{ delivery.cherry_weight_kg }}</td>
+                    <td style="padding:8px 10px; text-align:right;">{{ delivery.dry_weight_kg }}</td>
+                    <td style="padding:8px 10px;">{{ delivery.get_quality_grade_display }}</td>
+                    <td style="padding:8px 10px; text-align:right;">KES {{ delivery.price_per_kg }}</td>
+                    <td style="padding:8px 10px; text-align:right;">KES {{ delivery.total_amount|floatformat:0 }}</td>
+                    <td style="padding:8px 10px; text-align:center;">
+                        {% if delivery.payment_status == 'paid' %}
+                            <span style="background:#28a745; color:white; padding:2px 10px; border-radius:4px;">Paid</span>
+                        {% else %}
+                            <span style="background:#ffc107; color:#333; padding:2px 10px; border-radius:4px;">Pending</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" style="padding:20px; text-align:center; color:#999;">No deliveries recorded for this farmer yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

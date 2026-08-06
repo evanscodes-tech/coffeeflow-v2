@@ -1,0 +1,86 @@
+<% extends "admin/base_site.html" %> 
+<% load static %> 
+ 
+<% block content %> 
+ 
+<div style="padding:20px; max-width:1200px; margin:0 auto;"> 
+ 
+    <h2>?? Manager Dashboard</h2> 
+    <p style="color:#666;">Welcome, {{ user.username }} - overview of operations.</p> 
+ 
+    <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:15px; margin:20px 0;"> 
+        <div style="background:white; border:1px solid #d6cec0; padding:15px; border-radius:6px; text-align:center;"> 
+            <h3 style="margin:0; color:#1a2a3a;">{{ total_farmers }}</h3> 
+            <p style="margin:0; color:#666;">Total Farmers</p> 
+        </div> 
+        <div style="background:white; border:1px solid #d6cec0; padding:15px; border-radius:6px; text-align:center;"> 
+            <h3 style="margin:0; color:#1a2a3a;">{{ total_deliveries }}</h3> 
+            <p style="margin:0; color:#666;">Total Deliveries</p> 
+        </div> 
+        <div style="background:white; border:1px solid #d6cec0; padding:15px; border-radius:6px; text-align:center;"> 
+            <p style="margin:0; color:#666;">Total Kgs Collected</p> 
+        </div> 
+        <div style="background:white; border:1px solid #d6cec0; padding:15px; border-radius:6px; text-align:center;"> 
+            <p style="margin:0; color:#666;">Total Paid</p> 
+        </div> 
+    </div> 
+ 
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:20px;"> 
+        <div style="background:#d4edda; border:1px solid #c3e6cb; padding:15px; border-radius:6px; text-align:center;"> 
+            <p style="margin:0; color:#155724;">Today's Coffee</p> 
+        </div> 
+        <div style="background:#fff3cd; border:1px solid #ffeeba; padding:15px; border-radius:6px; text-align:center;"> 
+            <p style="margin:0; color:#856404;">Pending Payments</p> 
+        </div> 
+    </div> 
+ 
+    <div style="background:white; border:1px solid #d6cec0; border-radius:6px; overflow:hidden; margin-bottom:20px;"> 
+        <div style="padding:12px 20px; background:#f8f5f0; border-bottom:1px solid #d6cec0;"> 
+            <strong>?? Recent Deliveries</strong> 
+        </div> 
+        <table style="width:100%; border-collapse:collapse;"> 
+            <thead> 
+                <tr style="background:#f0ebe3;"> 
+                    <th style="padding:10px; text-align:left;">Farmer</th> 
+                    <th style="padding:10px; text-align:right;">Weight</th> 
+                    <th style="padding:10px; text-align:center;">Date</th> 
+                    <th style="padding:10px; text-align:center;">Status</th> 
+                </tr> 
+            </thead> 
+            <tbody> 
+                <% for delivery in recent_deliveries %> 
+                <tr style="border-bottom:1px solid #eee;"> 
+                    <td style="padding:10px;">{{ delivery.farmer.full_name }}</td> 
+                    <td style="padding:10px; text-align:right;">{{ delivery.cherry_weight_kg }} kg</td> 
+                    <td style="padding:10px; text-align:center;"> 
+                        <% if delivery.payment_status == 'paid' %> 
+                            <span style="background:#28a745; color:white; padding:2px 10px; border-radius:4px;">Paid</span> 
+                        <% else %> 
+                            <span style="background:#ffc107; color:#333; padding:2px 10px; border-radius:4px;">Pending</span> 
+                        <% endif %> 
+                    </td> 
+                </tr> 
+                <% empty %> 
+                <tr> 
+                    <td colspan="4" style="padding:20px; text-align:center; color:#999;">No deliveries recorded yet.</td> 
+                </tr> 
+                <% endfor %> 
+            </tbody> 
+        </table> 
+    </div> 
+ 
+    <div style="display:flex; gap:15px; flex-wrap:wrap;"> 
+        <a href="{% url 'reports:collection_report' %}" style="background:#2c5f3e; color:white; padding:10px 20px; text-decoration:none; border-radius:6px; font-weight:600;"> 
+            ?? View Reports 
+        </a> 
+        <a href="/admin/farmers/farmerprofile/" style="background:#17a2b8; color:white; padding:10px 20px; text-decoration:none; border-radius:6px; font-weight:600;"> 
+            ?? Manage Farmers 
+        </a> 
+        <a href="/admin/deliveries/coffeebatch/" style="background:#6c757d; color:white; padding:10px 20px; text-decoration:none; border-radius:6px; font-weight:600;"> 
+            ?? View Deliveries 
+        </a> 
+    </div> 
+ 
+</div> 
+ 
+<% endblock %> 

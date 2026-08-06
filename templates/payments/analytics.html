@@ -1,0 +1,106 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block content %}
+
+<div style="padding:20px; max-width:1200px; margin:0 auto;">
+
+    <h2>📊 Payment Analytics</h2>
+    <p style="color:#666;">Overview of all payments made through CoffeeFlow.</p>
+
+    <!-- Summary Cards -->
+    <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:15px; margin:20px 0;">
+        <div style="background:#d4edda; border:1px solid #c3e6cb; padding:15px; border-radius:6px; text-align:center;">
+            <h3 style="margin:0; color:#155724;">KES {{ total_success|floatformat:0 }}</h3>
+            <p style="margin:0; color:#155724;">Total Paid (Success)</p>
+        </div>
+        <div style="background:#fff3cd; border:1px solid #ffeeba; padding:15px; border-radius:6px; text-align:center;">
+            <h3 style="margin:0; color:#856404;">KES {{ total_pending|floatformat:0 }}</h3>
+            <p style="margin:0; color:#856404;">Pending</p>
+        </div>
+        <div style="background:#f8d7da; border:1px solid #f5c6cb; padding:15px; border-radius:6px; text-align:center;">
+            <h3 style="margin:0; color:#721c24;">KES {{ total_failed|floatformat:0 }}</h3>
+            <p style="margin:0; color:#721c24;">Failed</p>
+        </div>
+        <div style="background:#cce5ff; border:1px solid #b8daff; padding:15px; border-radius:6px; text-align:center;">
+            <h3 style="margin:0; color:#004085;">KES {{ total_paid|floatformat:0 }}</h3>
+            <p style="margin:0; color:#004085;">Total Payments</p>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px; margin-bottom:20px;">
+        <div style="background:white; border:1px solid #ddd; padding:15px; border-radius:6px; text-align:center;">
+            <h3 style="margin:0;">{{ payment_count }}</h3>
+            <p style="margin:0; color:#666;">Total Transactions</p>
+        </div>
+        <div style="background:white; border:1px solid #ddd; padding:15px; border-radius:6px; text-align:center;">
+            <h3 style="margin:0;">{{ success_count }}</h3>
+            <p style="margin:0; color:#666;">Successful</p>
+        </div>
+        <div style="background:white; border:1px solid #ddd; padding:15px; border-radius:6px; text-align:center;">
+            <h3 style="margin:0;">{{ failed_count }}</h3>
+            <p style="margin:0; color:#666;">Failed</p>
+        </div>
+    </div>
+
+    <!-- Today & Month -->
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:20px;">
+        <div style="background:white; border:1px solid #ddd; padding:15px; border-radius:6px; text-align:center;">
+            <h3 style="margin:0; color:#28a745;">KES {{ today_total|floatformat:0 }}</h3>
+            <p style="margin:0; color:#666;">Today ({{ today_count }} payments)</p>
+        </div>
+        <div style="background:white; border:1px solid #ddd; padding:15px; border-radius:6px; text-align:center;">
+            <h3 style="margin:0; color:#17a2b8;">KES {{ month_total|floatformat:0 }}</h3>
+            <p style="margin:0; color:#666;">Last 30 Days</p>
+        </div>
+    </div>
+
+    <!-- Recent Payments -->
+    <div style="background:white; border:1px solid #ddd; border-radius:6px; overflow:hidden;">
+        <div style="padding:12px 20px; background:#f8f9fa; border-bottom:1px solid #ddd;">
+            <strong>🕐 Recent Payments</strong>
+        </div>
+        <table style="width:100%; border-collapse:collapse;">
+            <thead>
+                <tr style="background:#f8f9fa;">
+                    <th style="padding:10px; text-align:left;">Farmer</th>
+                    <th style="padding:10px; text-align:right;">Amount</th>
+                    <th style="padding:10px; text-align:center;">Status</th>
+                    <th style="padding:10px; text-align:center;">Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for payment in recent_payments %}
+                <tr style="border-bottom:1px solid #eee;">
+                    <td style="padding:10px;">
+                        <a href="{% url 'farmers:farmer_detail' payment.farmer.farmer_id %}">
+                            {{ payment.farmer.full_name }}
+                        </a>
+                    </td>
+                    <td style="padding:10px; text-align:right;">KES {{ payment.amount|floatformat:0 }}</td>
+                    <td style="padding:10px; text-align:center;">
+                        {% if payment.status == 'success' %}
+                            <span style="background:#28a745; color:white; padding:2px 10px; border-radius:4px;">✅ Success</span>
+                        {% elif payment.status == 'pending' %}
+                            <span style="background:#ffc107; color:#333; padding:2px 10px; border-radius:4px;">⏳ Pending</span>
+                        {% elif payment.status == 'processing' %}
+                            <span style="background:#17a2b8; color:white; padding:2px 10px; border-radius:4px;">🔄 Processing</span>
+                        {% else %}
+                            <span style="background:#dc3545; color:white; padding:2px 10px; border-radius:4px;">❌ Failed</span>
+                        {% endif %}
+                    </td>
+                    <td style="padding:10px; text-align:center;">{{ payment.payment_date|date:"d M Y H:i" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" style="padding:20px; text-align:center; color:#999;">No payments recorded yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+{% endblock %}

@@ -34,6 +34,8 @@ urlpatterns = [
     path('api/', include('apps.mobile_api.urls')),
     path('reports/', include('apps.reports.urls')),
     path('staff/', include('apps.staff_portal.urls')),
+    path('payments/', include('apps.payments.urls')),
+    path('manager/', include('apps.manager.urls')),
 ]
 
 if settings.DEBUG:

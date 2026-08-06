@@ -98,6 +98,8 @@ class FarmerProfile(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=True)
 
+    farmer_id = models.CharField(max_length=20, unique=True, blank=True, null=True)
+
     class Meta:
         app_label = 'farmers'
         ordering = ['-registration_date']
@@ -108,6 +110,8 @@ class FarmerProfile(models.Model):
         ]
 
     def __str__(self):
+        if self.farmer_id:
+            return f"{self.farmer_id} - {self.first_name} {self.last_name}"
         return f"{self.first_name} {self.last_name} - {self.farm_name}"
 
     def full_name(self):
@@ -125,3 +129,22 @@ class FarmerProfile(models.Model):
             payment_status='paid'
         ).aggregate(total=Sum('cherry_weight_kg'))
         return result['total'] or 0
+
+    # ===== SAVE METHOD - Auto-generate farmer_id =====
+    def save(self, *args, **kwargs):
+        # Auto-generate farmer_id if not set
+        if not self.farmer_id:
+            # Get the last farmer by ID (primary key)
+            last_farmer = FarmerProfile.objects.order_by('-id').first()
+            if last_farmer and last_farmer.farmer_id:
+                # Extract number from F001 → 1
+                try:
+                    last_num = int(last_farmer.farmer_id[1:])
+                    next_num = last_num + 1
+                except (ValueError, IndexError):
+                    next_num = 1
+            else:
+                next_num = 1
+            self.farmer_id = f"F{next_num:03d}"
+            print(f"🔑 Generated farmer_id: {self.farmer_id}")
+        super().save(*args, **kwargs)

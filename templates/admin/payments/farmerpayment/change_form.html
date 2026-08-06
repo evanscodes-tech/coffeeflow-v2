@@ -1,0 +1,158 @@
+{% extends "admin/change_form.html" %}
+{% load static %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+    /* ===== Make the Add Payment page match the navy/green/brown theme ===== */
+    
+    /* Form container */
+    #content {
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 25px;
+        border: 1px solid #d6cec0;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    /* Field labels */
+    .aligned label {
+        color: #1a2a3a;
+        font-weight: 600;
+        font-size: 13px;
+        width: 160px;
+    }
+
+    /* Input fields */
+    .aligned input,
+    .aligned select,
+    .aligned textarea {
+        border: 1px solid #d6cec0;
+        border-radius: 4px;
+        padding: 8px 12px;
+        font-size: 14px;
+        background: #ffffff;
+        color: #1a1a1a;
+    }
+
+    .aligned input:focus,
+    .aligned select:focus,
+    .aligned textarea:focus {
+        border-color: #8b6b4d;
+        box-shadow: 0 0 0 2px rgba(139, 107, 77, 0.2);
+        outline: none;
+    }
+
+    /* Read-only fields (like payment_date, completed_at) */
+    .readonly {
+        color: #1a1a1a;
+        font-weight: 500;
+        background: #f8f5f0;
+        padding: 8px 12px;
+        border-radius: 4px;
+        display: inline-block;
+    }
+
+    /* Form sections */
+    .module h2 {
+        background: #f0ebe3;
+        color: #1a2a3a;
+        padding: 12px 18px;
+        border-bottom: 1px solid #d6cec0;
+        font-size: 16px;
+        font-weight: 600;
+        border-radius: 6px 6px 0 0;
+        margin: 0;
+    }
+
+    .module {
+        border: 1px solid #d6cec0;
+        border-radius: 6px;
+        margin-bottom: 20px;
+        background: white;
+    }
+
+    /* Buttons */
+    .submit-row input[type="submit"] {
+        background: #2c5f3e;
+        color: white;
+        border: none;
+        padding: 10px 24px;
+        border-radius: 4px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .submit-row input[type="submit"]:hover {
+        background: #1e452b;
+    }
+
+    .submit-row input[type="button"] {
+        background: #8b6b4d;
+        color: white;
+        border: none;
+        padding: 10px 24px;
+        border-radius: 4px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .submit-row input[type="button"]:hover {
+        background: #6e5239;
+    }
+
+    /* Object tools (the view/change/delete links) */
+    .object-tools a {
+        background: #2c5f3e;
+        color: white;
+        padding: 6px 14px;
+        border-radius: 4px;
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .object-tools a:hover {
+        background: #1e452b;
+    }
+
+    /* Help text */
+    .help {
+        color: #5a5a5a;
+        font-size: 12px;
+    }
+
+    /* Errors */
+    .errornote {
+        background: #f5e6e4;
+        border: 1px solid #d4a8a0;
+        color: #6b2a22;
+        padding: 12px;
+        border-radius: 4px;
+    }
+
+    /* Deletelink */
+    .deletelink {
+        background: #b33c3c !important;
+        color: white !important;
+        padding: 6px 14px !important;
+        border-radius: 4px !important;
+        text-decoration: none !important;
+    }
+
+    .deletelink:hover {
+        background: #8a2e2e !important;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+        .aligned label {
+            width: 100%;
+        }
+        #content {
+            padding: 16px;
+        }
+    }
+</style>
+{% endblock %}

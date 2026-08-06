@@ -5,6 +5,8 @@ from django.utils.translation import gettext_lazy as _
 class CustomUser(AbstractUser):
     class Role(models.TextChoices):
         ADMIN = 'admin', _('Admin')
+        MANAGER = 'manager', _('Manager')
+        TREASURER = 'treasurer', _('Treasurer')
         STAFF = 'staff', _('Staff')
         FARMER = 'farmer', _('Farmer')
     
@@ -47,8 +49,22 @@ class CustomUser(AbstractUser):
     def is_admin(self):
         return self.role == self.Role.ADMIN or self.is_superuser
     
+    def is_manager(self):
+        return self.role == self.Role.MANAGER
+    
+    def is_treasurer(self):
+        return self.role == self.Role.TREASURER
+    
     def is_staff_user(self):
-        return self.role == self.Role.STAFF or self.is_admin()
+        return self.role == self.Role.STAFF or self.is_admin() or self.is_manager()
     
     def is_farmer(self):
         return self.role == self.Role.FARMER
+    
+    def has_finance_access(self):
+        """Check if user can access finance portal"""
+        return self.role in [self.Role.ADMIN, self.Role.TREASURER]
+    
+    def has_manager_access(self):
+        """Check if user can access manager portal"""
+        return self.role in [self.Role.ADMIN, self.Role.MANAGER]

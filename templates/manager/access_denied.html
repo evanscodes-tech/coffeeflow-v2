@@ -1,0 +1,11 @@
+<% extends "admin/base_site.html" %> 
+<% load static %> 
+ 
+<% block content %> 
+<div style="padding:40px; text-align:center;"> 
+    <h2 style="color:#dc3545;">? Access Denied</h2> 
+    <p style="color:#666; margin-top:10px;">You do not have permission to view this page.</p> 
+    <p style="color:#666;">Only Managers and Admins can access the Manager Portal.</p> 
+    <a href="{% url 'admin:index' %}" style="display:inline-block; margin-top:20px; background:#2c5f3e; color:white; padding:10px 24px; text-decoration:none; border-radius:4px;">Back to Dashboard</a> 
+</div> 
+<% endblock %> 

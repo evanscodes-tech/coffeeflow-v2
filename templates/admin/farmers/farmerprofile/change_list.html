@@ -1,0 +1,207 @@
+{% extends "admin/change_list.html" %}
+{% load static %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+    /* ===== STYLE THE FARMER PROFILES LIST PAGE ===== */
+
+    /* Content area */
+    #content {
+        background: #ffffff !important;
+        border-radius: 8px !important;
+        padding: 25px !important;
+        border: 1px solid #d6cec0 !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05) !important;
+    }
+
+    /* Module / card */
+    .module {
+        border: 1px solid #d6cec0 !important;
+        border-radius: 6px !important;
+        background: white !important;
+    }
+
+    .module h2 {
+        background: #f0ebe3 !important;
+        color: #1a2a3a !important;
+        padding: 12px 18px !important;
+        border-bottom: 1px solid #d6cec0 !important;
+        font-size: 16px !important;
+        font-weight: 600 !important;
+        border-radius: 6px 6px 0 0 !important;
+        margin: 0 !important;
+    }
+
+    /* Table */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #ffffff !important;
+    }
+
+    th {
+        background: #e8e0d5 !important;
+        color: #1a2a3a !important;
+        font-weight: 600 !important;
+        padding: 10px 14px !important;
+        border: 1px solid #d6cec0 !important;
+        text-align: left !important;
+    }
+
+    td {
+        padding: 10px 14px !important;
+        border: 1px solid #d6cec0 !important;
+        background: #ffffff !important;
+        color: #1a1a1a !important;
+    }
+
+    tr:nth-child(even) td {
+        background: #f8f5f0 !important;
+    }
+
+    tr:hover td {
+        background: #f0ebe3 !important;
+    }
+
+    /* Links inside table */
+    td a {
+        color: #1a1a1a !important;
+        text-decoration: none !important;
+        font-weight: 500 !important;
+    }
+
+    td a:hover {
+        color: #2c5f3e !important;
+        text-decoration: underline !important;
+    }
+
+    /* Add link (green) */
+    .addlink {
+        color: #2c5f3e !important;
+        font-weight: 600 !important;
+    }
+
+    .addlink:hover {
+        color: #1e452b !important;
+    }
+
+    /* Breadcrumbs */
+    .breadcrumbs {
+        background: #f0ebe3 !important;
+        color: #1a2a3a !important;
+        padding: 10px 18px !important;
+        border-bottom: 1px solid #d6cec0 !important;
+        border-radius: 6px 6px 0 0 !important;
+    }
+
+    .breadcrumbs a {
+        color: #1a2a3a !important;
+        text-decoration: none !important;
+    }
+
+    .breadcrumbs a:hover {
+        color: #2c5f3e !important;
+        text-decoration: underline !important;
+    }
+
+    /* Search bar */
+    #searchbar {
+        border: 1px solid #d6cec0 !important;
+        border-radius: 4px !important;
+        padding: 6px 12px !important;
+        min-height: 38px !important;
+    }
+
+    #searchbar:focus {
+        border-color: #8b6b4d !important;
+        box-shadow: 0 0 0 2px rgba(139, 107, 77, 0.2) !important;
+    }
+
+    /* Buttons (Go, Reset) */
+    .button, input[type="submit"] {
+        background: #2c5f3e !important;
+        color: white !important;
+        border: none !important;
+        padding: 6px 16px !important;
+        border-radius: 4px !important;
+        cursor: pointer !important;
+        font-weight: 500 !important;
+    }
+
+    .button:hover, input[type="submit"]:hover {
+        background: #1e452b !important;
+    }
+
+    /* Object tools (Add button) */
+    .object-tools a {
+        background: #2c5f3e !important;
+        color: white !important;
+        padding: 6px 14px !important;
+        border-radius: 4px !important;
+        text-decoration: none !important;
+        font-weight: 500 !important;
+    }
+
+    .object-tools a:hover {
+        background: #1e452b !important;
+    }
+
+    /* Pagination */
+    .paginator {
+        background: #f8f5f0 !important;
+        padding: 10px 16px !important;
+        border-top: 1px solid #d6cec0 !important;
+        border-radius: 0 0 6px 6px !important;
+        color: #1a2a3a !important;
+    }
+
+    .paginator a {
+        color: #2c5f3e !important;
+    }
+
+    .paginator a:hover {
+        color: #1e452b !important;
+    }
+
+    /* Filter sidebar */
+    #changelist-filter {
+        background: #f8f5f0 !important;
+        border: 1px solid #d6cec0 !important;
+        border-radius: 6px !important;
+        padding: 12px !important;
+    }
+
+    #changelist-filter h2 {
+        background: #f0ebe3 !important;
+        color: #1a2a3a !important;
+        padding: 8px 12px !important;
+        border-bottom: 1px solid #d6cec0 !important;
+        font-size: 14px !important;
+        font-weight: 600 !important;
+    }
+
+    #changelist-filter a {
+        color: #1a1a1a !important;
+        text-decoration: none !important;
+    }
+
+    #changelist-filter a:hover {
+        color: #2c5f3e !important;
+        text-decoration: underline !important;
+    }
+
+    /* Action select dropdown */
+    #changelist select {
+        border: 1px solid #d6cec0 !important;
+        border-radius: 4px !important;
+        padding: 4px 8px !important;
+        min-height: 38px !important;
+    }
+
+    /* Result count */
+    .results .action-counter {
+        color: #1a2a3a !important;
+    }
+</style>
+{% endblock %}

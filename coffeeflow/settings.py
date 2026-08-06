@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'apps.mobile_api',
     'apps.reports',
      'apps.staff_portal',
+     'apps.manager',
 ]
 
 MIDDLEWARE = [
@@ -144,4 +145,12 @@ ADMIN_INTERFACE_SETTINGS = {
 # Africa's Talking SMS Configuration
 AFRICASTALKING_USERNAME = 'sandbox'  # For testing
 AFRICASTALKING_API_KEY = 'atsk_4fd1caa981972578f01a721773fda048ac9c433b9e1014948f132abfc2f34177a53d4983'  # Paste your API key from AT dashboard
+
 # ===================================================
+
+# M-Pesa Daraja Configuration
+MPESA_CONSUMER_KEY = "G1inbFZoe8qsJZzs2soPmdYqxsuMAV52A0aHLuqZitvFmg7i"  # Replace with your actual key
+MPESA_CONSUMER_SECRET = "HAlgQW0UAFQVZ0TdB0tjzBy2Zi5jeAWYf1lQNexJNfmL7soHOafs9yJm0MkusTAl"  # Replace with your actual secret
+MPESA_PASSKEY = "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919"  # Default sandbox
+MPESA_SHORTCODE = "174379"  # Default sandbox
+MPESA_ENVIRONMENT = "sandbox"  # 'sandbox' or 'production'

@@ -1,0 +1,74 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block content %}
+
+<div style="padding:20px; max-width:1200px; margin:0 auto;">
+
+    <h2>🔍 Search Farmers</h2>
+
+    <!-- Search Form -->
+    <form method="GET" action="{% url 'farmers:search_farmer' %}" style="margin:20px 0;">
+        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+            <input
+                type="text"
+                name="q"
+                placeholder="Search by ID, Name, or Phone..."
+                value="{{ query }}"
+                style="flex:1; min-width:250px; padding:10px 16px; border:1px solid #d6cec0; border-radius:6px; font-size:16px; background:white;"
+            >
+            <button type="submit" style="background:#2c5f3e; color:white; border:none; padding:10px 24px; border-radius:6px; cursor:pointer; font-weight:600;">
+                Search
+            </button>
+            {% if query %}
+                <a href="{% url 'farmers:search_farmer' %}" style="color:#6c757d; text-decoration:none;">Clear</a>
+            {% endif %}
+        </div>
+    </form>
+
+    <!-- Results -->
+    {% if query %}
+        <p style="color:#555; margin-bottom:15px;">
+            Found <strong>{{ count }}</strong> farmer{{ count|pluralize }} matching "<strong>{{ query }}</strong>"
+        </p>
+
+        {% if farmers %}
+            <div style="background:white; border:1px solid #d6cec0; border-radius:8px; overflow:hidden;">
+                <table style="width:100%; border-collapse:collapse;">
+                    <thead>
+                        <tr style="background:#f0ebe3;">
+                            <th style="padding:12px 16px; text-align:left;">ID</th>
+                            <th style="padding:12px 16px; text-align:left;">Name</th>
+                            <th style="padding:12px 16px; text-align:left;">Phone</th>
+                            <th style="padding:12px 16px; text-align:left;">Farm</th>
+                            <th style="padding:12px 16px; text-align:center;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for farmer in farmers %}
+                        <tr style="border-bottom:1px solid #eee;">
+                            <td style="padding:10px 16px;"><strong>{{ farmer.farmer_id }}</strong></td>
+                            <td style="padding:10px 16px;">{{ farmer.full_name }}</td>
+                            <td style="padding:10px 16px;">{{ farmer.phone_number }}</td>
+                            <td style="padding:10px 16px;">{{ farmer.farm_name }}</td>
+                            <td style="padding:10px 16px; text-align:center;">
+                                <a href="{% url 'farmers:farmer_detail' farmer.farmer_id %}" style="background:#2c5f3e; color:white; padding:6px 14px; border-radius:4px; text-decoration:none; font-size:13px;">
+                                    View Profile
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div style="background:#f8f5f0; border:1px solid #d6cec0; border-radius:8px; padding:40px; text-align:center; color:#888;">
+                <p style="font-size:18px;">No farmers found matching "<strong>{{ query }}</strong>"</p>
+                <p style="font-size:14px; margin-top:5px;">Try searching by ID (e.g., F001), name, or phone number.</p>
+            </div>
+        {% endif %}
+    {% endif %}
+
+</div>
+
+{% endblock %}
